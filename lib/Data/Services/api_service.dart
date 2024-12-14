@@ -40,7 +40,7 @@ class ApiService {
         debugPrint("mobileApi response:- ${response.body}");
         responsed = jsonDecode(response.body);
         if (jsonDecode(response.body)['code'] == 200) {
-          Get.offAllNamed(RouteConstants.otpScreen, arguments: {"no": phone});
+          //Get.offAllNamed(RouteConstants.otpScreen, arguments: {"no": phone});
           customToast(context, jsonDecode(response.body)['msg'] ?? "",
               ToastType.success);
           loading.value = false;

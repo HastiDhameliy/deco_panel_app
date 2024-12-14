@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,6 +10,8 @@ class LoginController extends GetxController with WidgetsBindingObserver {
   RxBool isLoading = false.obs;
   RxBool isAble = false.obs;
   RxBool isAble2 = false.obs;
+  FirebaseAuth auth = FirebaseAuth.instance;
+
   final GlobalKey<FormState> profileFormKey = GlobalKey<FormState>();
 
   Rx<TextEditingController> numberController = TextEditingController().obs;

@@ -1,17 +1,144 @@
+import 'package:another_telephony/telephony.dart';
 import 'package:deco_flutter_app/Data/Services/api_service.dart';
 import 'package:deco_flutter_app/Util/Constant/app_size.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 
+import '../../Controller/login_controller.dart';
 import '../../Controller/otp_controller.dart';
 import '../../Util/Constant/app_colors.dart';
 import '../../Util/Constant/app_images.dart';
+import '../../Util/custom/custom_toast.dart';
 import '../../widget/common_button.dart';
 
-class OtpScreen extends GetView<OtpController> {
+class OtpScreen extends StatefulWidget {
   const OtpScreen({super.key});
+
+  @override
+  State<OtpScreen> createState() => _OtpScreenState();
+}
+
+class _OtpScreenState extends State<OtpScreen> {
+  LoginController loginController = Get.put(LoginController());
+  OtpController controller = Get.put(OtpController());
+  int backspaceCount = 0;
+  final telephony = Telephony.instance;
+  RxBool checkTermsCondition = false.obs;
+
+  //final controller = WebViewController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    listenToIncomingSMS(context);
+    super.initState();
+  }
+
+  void listenToIncomingSMS(BuildContext context) {
+    print("Listening to sms.");
+    telephony.listenIncomingSms(
+        onNewMessage: (SmsMessage message) {
+          // Handle message
+          print("sms received : ${message.body}");
+          // verify if we are reading the correct sms or not
+
+          if (message.body!.contains("singleclick-1597e.firebaseapp.com")) {
+            String otpCode = message.body!.substring(0, 6);
+            List<String> otpCharacters = otpCode.split('');
+            print("OTP::::::$otpCode");
+            setState(
+              () {
+                controller.otpController.value.text =
+                    otpCode.substring(0, 6).toString();
+              },
+            );
+          }
+        },
+        listenInBackground: false);
+  }
+
+  Future<void> sendOTP() async {
+    await loginController.auth
+        .setSettings(appVerificationDisabledForTesting: true);
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      forceResendingToken: 4,
+      phoneNumber: "+91${loginController.numberController.value.text.trim()}",
+      timeout: const Duration(seconds: 60),
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        //     mobileNumberController.isButtonLoading.value =
+        // false;
+        await loginController.auth.signInWithCredential(credential);
+      },
+      verificationFailed: (FirebaseAuthException e) async {
+        print('fError : ${e.code},${e.message}');
+        if (e.code == 'invalid-phone-number') {
+          // mobileNumberController.isButtonLoading.value =
+          // false;
+          customToast(context, "The provided phone number is not valid.",
+              ToastType.warning);
+
+          print('The provided phone number is not valid.');
+        } else if (e.code == 'too-many-requests') {
+          // mobileNumberController.isButtonLoading.value =
+          // false;
+          customToast(
+              context,
+              "Sorry, You are many requested\nPlease try again later...",
+              ToastType.warning);
+        } else if (e.code == 'unknown') {
+          // await otpController
+          //     .postCheckMobileApi({
+          //   "mobile": mobileNumberController
+          //       .mobileNumberController
+          //       .value
+          //       .text
+          //       .trim(),
+          // });
+          // mobileNumberController.isButtonLoading.value =
+          // false;
+          customToast(
+              context,
+              "Sorry, Internal error has occurred\nPlease try again later...",
+              ToastType.error);
+        } else {
+          // mobileNumberController.isButtonLoading.value =
+          // false;
+          customToast(
+              context,
+              "Sorry, Something want wrong\nPlease try again later...",
+              ToastType.warning);
+        }
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        controller.resendToken.value = resendToken ?? 0;
+        controller.verify.value = verificationId;
+        customToast(context, "OTP Sent Successfully", ToastType.success);
+        listenToIncomingSMS(context);
+        // mobileNumberController.isButtonLoading.value =
+        // false;
+        // Get.to(() => OtpScreen(
+        //   // verify: verificationId,
+        //   // phoneNumber: controller
+        //   //     .mobileNumberController
+        //   //     .value
+        //   //     .text
+        //   //     .trim(),
+        // ));
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {
+        //     mobileNumberController.isButtonLoading.value =
+        // false;
+
+        // ShowToast.showToast(
+        //   "The provided phone number is not valid.",
+        //   showSuccess: false,
+        // );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

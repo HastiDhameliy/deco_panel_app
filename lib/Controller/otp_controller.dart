@@ -11,6 +11,7 @@ class OtpController extends GetxController with WidgetsBindingObserver {
   RxInt resendToken = 0.obs;
   late Timer _timer;
   final start = 60.obs;
+  FocusNode otp1FocusNode = FocusNode();
 
   @override
   void onReady() {

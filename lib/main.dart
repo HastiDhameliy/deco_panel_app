@@ -8,7 +8,15 @@ import 'RoutesManagment/screen_bindings.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: 'AIzaSyBal17y1PxbqIAM7jl5AlPTnM5AXibiVI0',
+      appId: '1:872125002397:android:35d6af0685296fe640da74',
+      messagingSenderId: '885031020744',
+      projectId: 'deco-panel',
+      storageBucket: 'deco-panel.firebasestorage.app',
+    ),
+  );
   runApp(const MyApp());
 }
 
