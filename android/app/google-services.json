@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "872125002397",
+    "project_id": "deco-panel",
+    "storage_bucket": "deco-panel.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:872125002397:android:35d6af0685296fe640da74",
+        "android_client_info": {
+          "package_name": "com.deco.decoapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBal17y1PxbqIAM7jl5AlPTnM5AXibiVI0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

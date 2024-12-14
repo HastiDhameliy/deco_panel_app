@@ -7,6 +7,7 @@ class FeedbackController extends GetxController with WidgetsBindingObserver {
   RxBool isAble = false.obs;
   Rx<TextEditingController> titleCon = TextEditingController().obs;
   Rx<TextEditingController> descriptionCon = TextEditingController().obs;
+  final GlobalKey<FormState> feedbackFormKey = GlobalKey<FormState>();
 
   @override
   void onReady() {

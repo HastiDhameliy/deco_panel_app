@@ -19,4 +19,7 @@ class AppImages {
   static const String feedbackIcon = "assets/reviews.png";
   static const String logoutIcon = "assets/logout.png";
   static const String deleteIcon = "assets/delete.png";
+  static const String tokenIcon = "assets/token.png";
+  static const String feedbackBg = "assets/feedbackPageSVG.svg";
+  static const String aboutUsBg = "assets/about_us_bg.png";
 }

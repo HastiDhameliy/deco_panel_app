@@ -10,7 +10,7 @@ import '../../../widget/network_image_widget.dart';
 import 'best_seller_widget.dart';
 
 class AnimatedCarousel extends StatelessWidget {
-  AnimatedCarousel({super.key});
+  const AnimatedCarousel({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -132,6 +132,7 @@ class OfferCarousel extends GetView<BottomNavController> {
                   networkImage:
                       "${ApiConstants.imageBaseUrl}${controller.offerBannerList[index].offerImage ?? ""}",
                   title: controller.offerBannerList[index].offerHeading,
+                  url: controller.offerBannerList[index].offerLink.toString(),
                 );
               },
             ),

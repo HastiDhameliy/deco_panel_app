@@ -5,10 +5,12 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../Controller/bottom_nav_controller.dart';
+import '../../../Controller/past_order_controller.dart';
 import '../../../Data/Providers/api_constants.dart';
 import '../../../Util/Constant/app_colors.dart';
 import '../../../Util/Constant/app_images.dart';
 import '../../../Util/Constant/app_size.dart';
+import '../../../Util/custom/custom_toast.dart';
 import '../../../widget/common_button.dart';
 import '../../../widget/network_image_widget.dart';
 import '../../../widget/quanity_picker.dart';
@@ -29,24 +31,62 @@ class CategoryItemScreen extends GetView<BottomNavController> {
           surfaceTintColor: Colors.transparent,
           shadowColor: Colors.black.withOpacity(0.4),
           flexibleSpace: Container(
-              decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                // Light shadow color
-                blurRadius: 10.0,
-                // Soften the shadow
-                offset: const Offset(0, 4), // Shadow appears below the AppBar
-              ),
-            ],
-          )),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  // Light shadow color
+                  blurRadius: 10.0,
+                  // Soften the shadow
+                  offset: const Offset(0, 4), // Shadow appears below the AppBar
+                ),
+              ],
+            ),
+          ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
               Get.back();
             },
           ),
+          actions: [
+            Stack(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    Get.back();
+                    controller.changeIndex(2);
+                  },
+                  icon: Image.asset(
+                    AppImages.cartIcon,
+                    height: AppSize.displayHeight(context) * 0.025,
+                  ),
+                ),
+                Obx(
+                  () => Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: const BoxDecoration(
+                        color: AppColors.buttonColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        '${Get.find<PastOrderController>().cartList.length}', // Observed count
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ).paddingOnly(right: AppSize.displayWidth(context) * 0.02),
+          ],
           title: Text(controller.categoryData.value.productCategory ?? ""),
         ),
         body: Row(
@@ -74,7 +114,7 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                     padding: EdgeInsets.symmetric(
                       horizontal: AppSize.displayWidth(context) * 0.022,
                     ),
-                    width: AppSize.displayWidth(context) * 0.23,
+                    width: AppSize.displayWidth(context) * 0.25,
                     child: ListView.separated(
                       physics: const AlwaysScrollableScrollPhysics(),
                       shrinkWrap: true,
@@ -86,6 +126,9 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                         return CategoryItemWidget(
                           height: AppSize.displayWidth(context) * 0.17,
                           width: AppSize.displayWidth(context) * 0.17,
+                          isSelected: controller.categoryData.value ==
+                              controller
+                                  .productCategoryModel.value.data![index],
                           title: controller.productCategoryModel.value
                                   .data?[index].productCategory ??
                               "",
@@ -122,6 +165,8 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                             controller.subCategoryModel.value.data!.length,
                         itemBuilder: (BuildContext context, int index) {
                           return subCategoryItem(
+                            isLoading: false.obs,
+                            //controller.isLoadingTrue,
                             context: context,
                             title: controller.subCategoryModel.value
                                     .data?[index].productSubCategory ??
@@ -142,7 +187,7 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                                         ?.toString() ??
                                     "",
                               );
-
+                              _showDialog(context, index);
                               // Wait for data to be fetched
                               await Future.delayed(const Duration(
                                   seconds: 1)); // Adjust this delay if needed
@@ -153,8 +198,8 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                                   controller.sizeList.isNotEmpty &&
                                   controller.productItemList.isNotEmpty) {
                                 // If the lists are populated, show the dialog
-                                _showDialog(context);
                               } else {
+                                Get.back();
                                 // If any list is empty, show a toast or snackbar
                               }
                             },
@@ -169,7 +214,25 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                                 AppSize.displayHeight(context) * 0.015),
                       ),
                     )
-                  : const SizedBox(),
+                  : Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: Text(
+                              "No Data Available",
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.ptSans(
+                                color: AppColors.color333,
+                                fontSize: Get.height / 45,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
             ),
           ],
         ),
@@ -181,22 +244,27 @@ class CategoryItemScreen extends GetView<BottomNavController> {
       {BuildContext? context,
       String? image,
       String? title,
+      required RxBool isLoading,
       void Function()? onTap}) {
     return Container(
       decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1), // Shadow color with opacity
-              spreadRadius: 2, // Spread of the shadow
-              blurRadius: 6, // Blur radius of the shadow
-              offset: const Offset(0, 4), // Offset for the shadow (bottom only)
-            ),
-          ],
-          borderRadius: const BorderRadius.all(Radius.circular(defaultRadius))),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1), // Shadow color with opacity
+            spreadRadius: 2, // Spread of the shadow
+            blurRadius: 6, // Blur radius of the shadow
+            offset: const Offset(0, 4), // Offset for the shadow (bottom only)
+          ),
+        ],
+        borderRadius: const BorderRadius.all(
+          Radius.circular(defaultRadius),
+        ),
+      ),
       padding: EdgeInsets.symmetric(
-          vertical: AppSize.displayHeight(context) * 0.02,
-          horizontal: AppSize.displayWidth(context) * 0.02),
+        vertical: AppSize.displayHeight(context) * 0.02,
+        horizontal: AppSize.displayWidth(context) * 0.02,
+      ),
       child: Column(
         children: [
           SizedBox(
@@ -228,7 +296,7 @@ class CategoryItemScreen extends GetView<BottomNavController> {
               ),
             ],
           ),
-          Spacer(),
+          const Spacer(),
           InkWell(
             onTap: onTap ??
                 () {
@@ -285,29 +353,43 @@ class CategoryItemScreen extends GetView<BottomNavController> {
     );
   }
 
-  void _showDialog(BuildContext context) {
-    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-    debugPrint(controller.brandList.length.toString());
-
+  void _showDialog(BuildContext context, int index) {
     showDialog(
       context: context,
       builder: (context) {
-        return Obx(() => Center(
-              child: Material(
-                color: Colors.transparent,
-                child: Container(
-                  margin: const EdgeInsets.symmetric(
-                      horizontal: defaultPadding, vertical: defaultPadding),
-                  decoration: BoxDecoration(
+        return Center(
+            child: Material(
+          color: Colors.transparent,
+          child: Obx(
+            () => controller.isLoadingTrue.value
+                ? Container(
+                    height: AppSize.displayHeight(context) * 0.1,
+                    width: AppSize.displayHeight(context) * 0.1,
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: defaultPadding, vertical: defaultPadding),
+                    decoration: const BoxDecoration(
                       color: Colors.white,
-                      borderRadius:
-                          BorderRadius.all(Radius.circular(defaultRadius / 2))),
-                  width: AppSize.displayWidth(context),
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Form(
-                        key: formKey, // Use for form validation
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(defaultRadius / 2),
+                      ),
+                    ),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                      ),
+                    ),
+                  )
+                : Container(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: defaultPadding, vertical: defaultPadding),
+                    decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(defaultRadius / 2))),
+                    width: AppSize.displayWidth(context),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -316,7 +398,7 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Filters',
+                                  'Select Product',
                                   style: GoogleFonts.ptSans(
                                       fontSize:
                                           AppSize.displayHeight(context) * 0.02,
@@ -334,6 +416,84 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                               context,
                               label: "Brand",
                               selectedValue: controller.selectedBrand,
+                              onChanged: (p0) async {
+                                controller.thicknessList.value =
+                                    await ProductApiService()
+                                        .fetchThicknessApiUrl(
+                                  loading: controller.isLoadingThick,
+                                  id: controller.categoryData.value.id
+                                          ?.toString() ??
+                                      "",
+                                  subId: controller.subCategoryModel.value
+                                          .data?[index].id
+                                          ?.toString() ??
+                                      "",
+                                  brand: controller
+                                          .selectedBrand.value.productsBrand ??
+                                      "",
+                                );
+                                controller.sizeList.value =
+                                    await ProductApiService().fetchSizeApiUrl(
+                                  loading: controller.isLoadingThick,
+                                  id: controller.categoryData.value.id
+                                          ?.toString() ??
+                                      "",
+                                  subId: controller.subCategoryModel.value
+                                          .data?[index].id
+                                          ?.toString() ??
+                                      "",
+                                  brand: controller
+                                          .selectedBrand.value.productsBrand ??
+                                      "",
+                                  thickness: controller.selectedThick.value
+                                          .productsThickness ??
+                                      '',
+                                  unit: controller
+                                          .selectedThick.value.productsUnit ??
+                                      '',
+                                );
+
+                                controller.productItemList.value =
+                                    await ProductApiService()
+                                        .fetchProductApiUrl(
+                                  loading: controller.isLoadingThick,
+                                  id: controller.categoryData.value.id
+                                          ?.toString() ??
+                                      "",
+                                  subId: controller.subCategoryModel.value
+                                          .data?[index].id
+                                          ?.toString() ??
+                                      "",
+                                  brand: controller
+                                          .selectedBrand.value.productsBrand ??
+                                      "",
+                                  thickness: controller.selectedThick.value
+                                          .productsThickness ??
+                                      '',
+                                  unit: controller
+                                          .selectedThick.value.productsUnit ??
+                                      '',
+                                  size1: controller
+                                          .selectedSize.value.productsSize1
+                                          .toString() ??
+                                      '',
+                                  size2: controller
+                                          .selectedSize.value.productsSize2
+                                          .toString() ??
+                                      '',
+                                  sizeUnit: controller
+                                      .selectedSize.value.productsSizeUnit
+                                      .toString(),
+                                );
+
+                                if (controller.productItemList.isEmpty) {
+                                  customToast(
+                                      context,
+                                      'No Product found for add to cart',
+                                      ToastType.warning);
+                                  return;
+                                }
+                              },
                               items: controller.brandList
                                   .toSet()
                                   .map<DropdownMenuItem<BrandData>>(
@@ -348,41 +508,150 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                             ),
                             SizedBox(
                                 height: AppSize.displayHeight(context) * 0.02),
-                            _buildDropdownField<ThicknessData>(
-                              context,
-                              label: "Thickness",
-                              selectedValue: controller.selectedThick,
-                              items: controller.thicknessList
-                                  .toSet()
-                                  .map<DropdownMenuItem<ThicknessData>>(
-                                    (ThicknessData e) =>
-                                        DropdownMenuItem<ThicknessData>(
-                                      value: e,
-                                      child: Text(
-                                          "${e.productsThickness?.toString() ?? ""} ${e.productsUnit?.toString() ?? ""}"),
-                                    ),
+                            controller.thicknessList.isEmpty
+                                ? _buildDropdownField<ThicknessData>(
+                                    context,
+                                    label: "Thickness",
+                                    selectedValue: controller.selectedThick,
+                                    onChanged: (p0) async {
+                                      controller.sizeList.value =
+                                          await ProductApiService()
+                                              .fetchSizeApiUrl(
+                                        loading: controller.isLoadingThick,
+                                        id: controller.categoryData.value.id
+                                                ?.toString() ??
+                                            "",
+                                        subId: controller.subCategoryModel.value
+                                                .data?[index].id
+                                                ?.toString() ??
+                                            "",
+                                        brand: controller.selectedBrand.value
+                                                .productsBrand ??
+                                            "",
+                                        thickness: controller.selectedThick
+                                                .value.productsThickness ??
+                                            '',
+                                        unit: controller.selectedThick.value
+                                                .productsUnit ??
+                                            '',
+                                      );
+                                      controller.productItemList.value =
+                                          await ProductApiService()
+                                              .fetchProductApiUrl(
+                                        loading: controller.isLoadingThick,
+                                        id: controller.categoryData.value.id
+                                                ?.toString() ??
+                                            "",
+                                        subId: controller.subCategoryModel.value
+                                                .data?[index].id
+                                                ?.toString() ??
+                                            "",
+                                        brand: controller.selectedBrand.value
+                                                .productsBrand ??
+                                            "",
+                                        thickness: controller.selectedThick
+                                                .value.productsThickness ??
+                                            '',
+                                        unit: controller.selectedThick.value
+                                                .productsUnit ??
+                                            '',
+                                        size1: controller.selectedSize.value
+                                                .productsSize1
+                                                .toString() ??
+                                            '',
+                                        size2: controller.selectedSize.value
+                                                .productsSize2
+                                                .toString() ??
+                                            '',
+                                        sizeUnit: controller
+                                            .selectedSize.value.productsSizeUnit
+                                            .toString(),
+                                      );
+                                      if (controller.productItemList.isEmpty) {
+                                        customToast(
+                                            context,
+                                            'No Product found for add to cart',
+                                            ToastType.warning);
+                                        return;
+                                      }
+                                    },
+                                    items: controller.thicknessList
+                                        .toSet()
+                                        .map<DropdownMenuItem<ThicknessData>>(
+                                          (ThicknessData e) =>
+                                              DropdownMenuItem<ThicknessData>(
+                                            value: e,
+                                            child: Text(
+                                                "${e.productsThickness?.toString() ?? ""} ${e.productsUnit?.toString() ?? ""}"),
+                                          ),
+                                        )
+                                        .toList()
+                                        .obs,
                                   )
-                                  .toList()
-                                  .obs,
-                            ),
+                                : SizedBox(),
                             SizedBox(
                                 height: AppSize.displayHeight(context) * 0.02),
-                            _buildDropdownField<SizeData>(
-                              context,
-                              label: "Size",
-                              selectedValue: controller.selectedSize,
-                              items: controller.sizeList
-                                  .toSet()
-                                  .map<DropdownMenuItem<SizeData>>(
-                                    (SizeData e) => DropdownMenuItem<SizeData>(
-                                      value: e,
-                                      child: Text(
-                                          "${e.productsSize1?.toString() ?? ""}*${e.productsSize2?.toString() ?? ""} ${e.productsSizeUnit?.toString() ?? ""}"),
-                                    ),
+                            controller.sizeList.isNotEmpty
+                                ? _buildDropdownField<SizeData>(
+                                    context,
+                                    label: "Size",
+                                    selectedValue: controller.selectedSize,
+                                    onChanged: (p0) async {
+                                      controller.productItemList.value =
+                                          await ProductApiService()
+                                              .fetchProductApiUrl(
+                                        loading: controller.isLoadingThick,
+                                        id: controller.categoryData.value.id
+                                                ?.toString() ??
+                                            "",
+                                        subId: controller.subCategoryModel.value
+                                                .data?[index].id
+                                                ?.toString() ??
+                                            "",
+                                        brand: controller.selectedBrand.value
+                                                .productsBrand ??
+                                            "",
+                                        thickness: controller.selectedThick
+                                                .value.productsThickness ??
+                                            '',
+                                        unit: controller.selectedThick.value
+                                                .productsUnit ??
+                                            '',
+                                        size1: controller.selectedSize.value
+                                                .productsSize1
+                                                .toString() ??
+                                            '',
+                                        size2: controller.selectedSize.value
+                                                .productsSize2
+                                                .toString() ??
+                                            '',
+                                        sizeUnit: controller
+                                            .selectedSize.value.productsSizeUnit
+                                            .toString(),
+                                      );
+
+                                      if (controller.productItemList.isEmpty) {
+                                        customToast(
+                                            context,
+                                            'No Product found for add to cart',
+                                            ToastType.warning);
+                                        return;
+                                      }
+                                    },
+                                    items: controller.sizeList
+                                        .toSet()
+                                        .map<DropdownMenuItem<SizeData>>(
+                                          (SizeData e) =>
+                                              DropdownMenuItem<SizeData>(
+                                            value: e,
+                                            child: Text(
+                                                "${e.productsSize1?.toString() ?? ""}*${e.productsSize2?.toString() ?? ""} ${e.productsSizeUnit?.toString() ?? ""}"),
+                                          ),
+                                        )
+                                        .toList()
+                                        .obs,
                                   )
-                                  .toList()
-                                  .obs,
-                            ),
+                                : SizedBox(),
                             SizedBox(
                                 height: AppSize.displayHeight(context) * 0.02),
                             QuantityPicker(
@@ -420,51 +689,65 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                                     width:
                                         AppSize.displayWidth(context) * 0.02),
                                 Expanded(
-                                  child: CommonButton(
-                                    text: "ADD TO CART",
-                                    isLoading: controller.isLoadingCCart.value,
-                                    onPressed: () async {
-                                      await ProductApiService()
-                                          .createCartApiUrl(
-                                        context: context,
-                                        id: controller.productItemList.first
-                                                .productsCatgId
-                                                ?.toString() ??
-                                            "",
-                                        brand: controller.productItemList.first
-                                                .productsBrand
-                                                ?.toString() ??
-                                            "",
-                                        loading: controller.isLoadingCCart,
-                                        qty: controller.qty.value.toString(),
-                                        size1: controller.productItemList.first
-                                                .productsSize1
-                                                ?.toString() ??
-                                            "",
-                                        size2: controller.productItemList.first
-                                                .productsSize2
-                                                ?.toString() ??
-                                            "",
-                                        sizeUnit: controller.productItemList
-                                                .first.productsSizeUnit
-                                                ?.toString() ??
-                                            "",
-                                        subId: controller.productItemList.first
-                                                .productsSubCatgId
-                                                ?.toString() ??
-                                            "",
-                                        thickness: controller.productItemList
-                                                .first.productsThickness
-                                                ?.toString() ??
-                                            "",
-                                        unit: controller.productItemList.first
-                                                .productsUnit
-                                                ?.toString() ??
-                                            "",
-                                      );
-                                      Get.back();
-                                    },
-                                  ),
+                                  child: Obx(() => CommonButton(
+                                        text: "ADD TO CART",
+                                        isEnabled: controller
+                                            .productItemList.isNotEmpty,
+                                        isLoading:
+                                            controller.isLoadingCCart.value,
+                                        onPressed: () async {
+                                          await ProductApiService()
+                                              .createCartApiUrl(
+                                            context: context,
+                                            id: controller.productItemList.first
+                                                    .productsCatgId
+                                                    ?.toString() ??
+                                                "",
+                                            brand: controller.productItemList
+                                                    .first.productsBrand
+                                                    ?.toString() ??
+                                                "",
+                                            loading: controller.isLoadingCCart,
+                                            qty:
+                                                controller.qty.value.toString(),
+                                            size1: controller.productItemList
+                                                    .first.productsSize1
+                                                    ?.toString() ??
+                                                "",
+                                            size2: controller.productItemList
+                                                    .first.productsSize2
+                                                    ?.toString() ??
+                                                "",
+                                            sizeUnit: controller.productItemList
+                                                    .first.productsSizeUnit
+                                                    ?.toString() ??
+                                                "",
+                                            subId: controller.productItemList
+                                                    .first.productsSubCatgId
+                                                    ?.toString() ??
+                                                "",
+                                            thickness: controller
+                                                    .productItemList
+                                                    .first
+                                                    .productsThickness
+                                                    ?.toString() ??
+                                                "",
+                                            unit: controller.productItemList
+                                                    .first.productsUnit
+                                                    ?.toString() ??
+                                                "",
+                                          )
+                                              .whenComplete(
+                                            () {
+                                              Get.back();
+                                              PastOrderController pastOrder =
+                                                  Get.find<
+                                                      PastOrderController>();
+                                              pastOrder.getOrderList();
+                                            },
+                                          );
+                                        },
+                                      )),
                                 ),
                               ],
                             ),
@@ -475,9 +758,8 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                       ),
                     ),
                   ),
-                ),
-              ),
-            ));
+          ),
+        ));
       },
     );
   }
@@ -485,6 +767,7 @@ class CategoryItemScreen extends GetView<BottomNavController> {
   Widget _buildDropdownField<T>(
     BuildContext context, {
     required String label,
+    void Function(T?)? onChanged,
     required RxList<DropdownMenuItem<T>>
         items, // Generic type for dropdown items
     required Rx<T> selectedValue, // Reactive selected value of type T
@@ -520,6 +803,7 @@ class CategoryItemScreen extends GetView<BottomNavController> {
             value: selectedValue.value, // Bind the selected value
             hintText: hintText, // Pass the hint text
             onChanged: (T? value) {
+              if (onChanged != null) onChanged(value);
               if (value != null) {
                 selectedValue.value = value; // Update the reactive value
               }

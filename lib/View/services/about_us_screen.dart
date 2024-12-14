@@ -1,4 +1,5 @@
 import 'package:deco_flutter_app/Controller/feedback_controller.dart';
+import 'package:deco_flutter_app/Util/Constant/app_images.dart';
 import 'package:deco_flutter_app/Util/Constant/app_size.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -34,7 +35,14 @@ class AboutUsScreen extends GetView<FeedbackController> {
             Get.back();
           },
         ),
-        title: const Text("About Us"),
+        title: Text(
+          "About Us",
+          style: GoogleFonts.roboto(
+            color: AppColors.color333,
+            fontSize: Get.height / 35,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(
@@ -45,17 +53,38 @@ class AboutUsScreen extends GetView<FeedbackController> {
             ClipPath(
               clipper: PeanutClipper(),
               child: Container(
-                height: 250, // Height of the clipped area
-                width: 300, // Width of the clipped area
+                height: AppSize.displayHeight(context) * 0.3,
+                // Height of the container
                 decoration: const BoxDecoration(
                   image: DecorationImage(
-                    image: NetworkImage(
-                        "https://api.gharpedia.com/wp-content/uploads/2018/08/0309110002-01-Block-Board.jpg"),
-                    fit: BoxFit.cover, // Make the image cover the clipped area
+                    image: AssetImage(AppImages.panelImage),
+                    fit: BoxFit
+                        .fill, // Ensures the background covers the container
                   ),
                 ),
               ),
             ),
+            /* Container(
+              height: AppSize.displayHeight(context) * 0.14,
+              // Height of the container
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(AppImages.aboutUsBg),
+                  fit: BoxFit
+                      .fill, // Ensures the background covers the container
+                ),
+              ),
+              child: Center(
+                child: Image.asset(
+                  AppImages.panelImage,
+                  fit: BoxFit.cover,
+                  // Adjust to fill the available space proportionally
+                  width: double.infinity,
+                  // Ensures it stretches horizontally
+                  height: double.infinity, // Ensures it stretches vertically
+                ),
+              ),
+            ),*/
             Text(
               "Deco Panel",
               textAlign: TextAlign.start,

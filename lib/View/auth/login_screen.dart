@@ -1,9 +1,12 @@
 import 'package:deco_flutter_app/Data/Services/api_service.dart';
+import 'package:deco_flutter_app/Util/custom/custom_toast.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../Controller/login_controller.dart';
+import '../../RoutesManagment/routes.dart';
 import '../../Util/Constant/app_colors.dart';
 import '../../Util/Constant/app_images.dart';
 import '../../Util/Constant/app_size.dart';
@@ -13,8 +16,6 @@ import '../../widget/text_form_field_widget.dart';
 
 class LoginScreen extends GetView<LoginController> {
   LoginScreen({super.key});
-
-  final GlobalKey<FormState> _loginStoreFormKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +28,7 @@ class LoginScreen extends GetView<LoginController> {
                   right: Get.width / 25,
                   top: Get.height / 18),
               child: Form(
-                key: _loginStoreFormKey,
+                key: controller.loginStoreFormKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -108,7 +109,7 @@ class LoginScreen extends GetView<LoginController> {
                       onPrivacyPolicyTap: () {},
                     ),
                     SizedBox(
-                      height: Get.height / 8,
+                      height: Get.height / 15,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -120,17 +121,173 @@ class LoginScreen extends GetView<LoginController> {
                             text: 'Get the code',
                             isEnabled: controller.isAble.value,
                             isLoading: controller.isLoading.value,
-                            onPressed: () {
-                              if (_loginStoreFormKey.currentState!.validate()) {
-                                ApiService().mobileApi(
-                                    phone:
-                                        controller.numberController.value.text,
-                                    context: context,
-                                    loading: controller.isLoading);
+                            onPressed: () async {
+                              FirebaseAuth auth = FirebaseAuth.instance;
+                              FocusScope.of(context).unfocus();
+                              if (controller.loginStoreFormKey.currentState!
+                                  .validate()) {
+                                await ApiService()
+                                    .mobileApi(
+                                        phone: controller
+                                            .numberController.value.text,
+                                        context: context,
+                                        loading: controller.isLoading)
+                                    .then(
+                                  (value) async {
+                                    /*if (value['code'] == 200) {
+                                      */ /*mobileNumberController.password.value =
+                                          value['data'];*/ /*
+                                      // await mobileNumberController.auth
+                                      //     .setSettings(appVerificationDisabledForTesting: false);
+                                      await FirebaseAuth.instance
+                                          .verifyPhoneNumber(
+                                        forceResendingToken: 4,
+                                        phoneNumber:
+                                            "+91${controller.numberController.value.value.text.trim()}",
+                                        timeout: const Duration(seconds: 60),
+                                        verificationCompleted:
+                                            (PhoneAuthCredential
+                                                credential) async {
+                                          //     mobileNumberController.isButtonLoading.value =
+                                          // false;
+                                          auth.signInWithCredential(credential);
+                                        },
+                                        verificationFailed:
+                                            (FirebaseAuthException e) async {
+                                          print(
+                                              'fError : ${e.code},${e.message}');
+                                          if (e.code ==
+                                              'invalid-phone-number') {
+                                            // mobileNumberController.isButtonLoading.value =
+                                            // false;
+                                            customToast(
+                                                context,
+                                                "The provided phone number is not valid.",
+                                                ToastType.warning);
+                                            print(
+                                                'The provided phone number is not valid.');
+                                          } else if (e.code ==
+                                              'too-many-requests') {
+                                            // mobileNumberController.isButtonLoading.value =
+                                            // false;
+                                            customToast(
+                                                context,
+                                                "Sorry, You are many requested\nPlease try again later...",
+                                                ToastType.warning);
+                                          } else if (e.code == 'unknown') {
+                                            // await otpController
+                                            //     .postCheckMobileApi({
+                                            //   "mobile": mobileNumberController
+                                            //       .mobileNumberController
+                                            //       .value
+                                            //       .text
+                                            //       .trim(),
+                                            // });
+                                            // mobileNumberController.isButtonLoading.value =
+                                            // false;
+                                            customToast(
+                                                context,
+                                                "Sorry, Internal error has occurred\nPlease try again later...",
+                                                ToastType.error);
+                                          } else {
+                                            // mobileNumberController.isButtonLoading.value =
+                                            // false;
+                                            customToast(
+                                                context,
+                                                "Sorry, Something want wrong\nPlease try again later...",
+                                                ToastType.warning);
+                                          }
+                                        },
+                                        codeSent: (String verificationId,
+                                            int? resendToken) {
+                                          OtpController otpController =
+                                              Get.put(OtpController());
+                                          otpController.resendToken.value =
+                                              resendToken ?? 0;
+                                          otpController.verify.value =
+                                              verificationId;
+                                          customToast(
+                                              context,
+                                              "OTP Sent Successfully",
+                                              ToastType.warning);
+                                          Get.offAllNamed(
+                                              RouteConstants.otpScreen,
+                                              arguments: {
+                                                "no": controller
+                                                    .numberController.value.text
+                                              });
+
+                                          // mobileNumberController.isButtonLoading.value =
+                                          // false;
+                                          // Get.to(() => OtpScreen(
+                                          //   // verify: verificationId,
+                                          //   // phoneNumber: controller
+                                          //   //     .mobileNumberController
+                                          //   //     .value
+                                          //   //     .text
+                                          //   //     .trim(),
+                                          // ));
+                                        },
+                                        codeAutoRetrievalTimeout:
+                                            (String verificationId) {
+                                          //     mobileNumberController.isButtonLoading.value =
+                                          // false;
+
+                                          // ShowToast.showToast(
+                                          //   "The provided phone number is not valid.",
+                                          //   showSuccess: false,
+                                          // );
+                                        },
+                                      );
+                                    } else {
+                                      */ /* Get.to(() => SignNameScreen(
+                                            phoneNumber: mobileNumberController
+                                                .mobileNumberController
+                                                .value
+                                                .text
+                                                .trim(),
+                                          ));*/ /*
+                                    }*/
+                                  },
+                                ).catchError(
+                                  (error) {
+                                    customToast(context, error.toString(),
+                                        ToastType.warning);
+                                  },
+                                );
                               }
                             },
                           ),
                         )
+                      ],
+                    ),
+                    SizedBox(
+                      height: AppSize.displayHeight(context) * 0.02,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Don't have an account?",
+                          style: GoogleFonts.ptSans(
+                            fontSize: Get.height / 55,
+                            fontWeight: FontWeight.normal,
+                            color: AppColors.color449,
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Get.offAllNamed(RouteConstants.editProfileScreen);
+                          },
+                          child: Text(
+                            " Register",
+                            style: GoogleFonts.ptSans(
+                              fontSize: Get.height / 55,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.colorF45,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ],

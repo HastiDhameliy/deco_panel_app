@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../Controller/bottom_nav_controller.dart';
 import '../../../Controller/profile_controller.dart';
@@ -8,7 +9,6 @@ import '../../../RoutesManagment/routes.dart';
 import '../../../Util/Constant/app_colors.dart';
 import '../../../Util/Constant/app_images.dart';
 import '../../../Util/Constant/app_size.dart';
-import '../../bottom_navigation/bottom_navigation_bar_screen.dart';
 
 class DrawerWidget extends StatefulWidget {
   const DrawerWidget({super.key});
@@ -28,8 +28,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     {1: "Logout", 2: AppImages.logoutIcon},
   ];
 
-  ProfileController profileController = Get.put(ProfileController());
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -37,41 +35,53 @@ class _DrawerWidgetState extends State<DrawerWidget> {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          Column(
-            children: [
-              SizedBox(
-                height: AppSize.displayHeight(context) * 0.06,
-              ),
-              Container(
-                height: AppSize.displayWidth(context) * 0.3,
-                width: AppSize.displayWidth(context) * 0.3,
-                padding: const EdgeInsets.all(defaultPadding / 4),
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage(
-                        AppImages.panelImage,
-                      ),
-                      fit: BoxFit.cover),
-                  shape: BoxShape.circle,
+          Obx(
+            () => Column(
+              children: [
+                SizedBox(
+                  height: AppSize.displayHeight(context) * 0.06,
                 ),
-              ),
-              Text(
-                profileController.useDataModel.value.data?.fullName ?? "",
-                style: GoogleFonts.ptSans(
-                  color: AppColors.darkHintColor,
-                  fontSize: Get.height / 45,
-                  fontWeight: FontWeight.w700,
+                Container(
+                  height: AppSize.displayWidth(context) * 0.3,
+                  width: AppSize.displayWidth(context) * 0.3,
+                  padding: const EdgeInsets.all(defaultPadding / 4),
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage(
+                          AppImages.panelImage,
+                        ),
+                        fit: BoxFit.cover),
+                    shape: BoxShape.circle,
+                  ),
                 ),
-              ),
-              Text(
-                profileController.useDataModel.value.data?.email ?? "",
-                style: GoogleFonts.roboto(
-                  color: AppColors.darkHintColor,
-                  fontSize: Get.height / 65,
-                  fontWeight: FontWeight.w400,
+                Text(
+                  Get.find<ProfileController>()
+                          .useDataModel
+                          .value
+                          .data
+                          ?.fullName ??
+                      "",
+                  style: GoogleFonts.ptSans(
+                    color: AppColors.darkHintColor,
+                    fontSize: Get.height / 45,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-              ),
-            ],
+                Text(
+                  Get.find<ProfileController>()
+                          .useDataModel
+                          .value
+                          .data
+                          ?.email ??
+                      "",
+                  style: GoogleFonts.roboto(
+                    color: AppColors.darkHintColor,
+                    fontSize: Get.height / 65,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
           ),
           const Divider(
             color: AppColors.buttonColor,
@@ -96,19 +106,19 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   color: AppColors.buttonColor,
                 ),
               ),
-              onTap: () {
+              onTap: () async {
                 var con = Get.find<BottomNavController>();
                 switch (index) {
                   case 0:
-                    scaffoldKey.currentState?.closeDrawer();
+                    con.drawerKey.currentState?.closeDrawer();
                     con.changeIndex(0);
                     break;
                   case 1:
-                    scaffoldKey.currentState?.closeDrawer();
+                    con.drawerKey.currentState?.closeDrawer();
                     con.changeIndex(3);
                     break;
                   case 2:
-                    scaffoldKey.currentState?.closeDrawer();
+                    con.drawerKey.currentState?.closeDrawer();
                     con.changeIndex(2);
                     break;
                   case 3:
@@ -121,7 +131,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     Get.toNamed(RouteConstants.feedBackScreen);
                     break;
                   case 6:
-                    Get.offAndToNamed(RouteConstants.loginScreen);
+                    final SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    prefs.clear();
+                    Get.offAllNamed(RouteConstants.loginScreen);
                     break;
                   default:
                 }

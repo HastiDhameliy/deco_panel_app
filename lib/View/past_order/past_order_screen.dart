@@ -1,10 +1,13 @@
+import 'package:deco_flutter_app/Data/Providers/api_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../Controller/past_order_controller.dart';
+import '../../RoutesManagment/routes.dart';
 import '../../Util/Constant/app_colors.dart';
 import '../../Util/Constant/app_size.dart';
-import 'components/past_order_item_widget.dart';
+import '../order_list/components/past_order_item_widget.dart';
 
 class PastOrderScreen extends GetView<PastOrderController> {
   const PastOrderScreen({super.key});
@@ -12,106 +15,191 @@ class PastOrderScreen extends GetView<PastOrderController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Obx(() => Column(
-            children: [
-              TabBar(
-                controller: controller.tabController.value,
-                labelColor: Colors.black,
-                unselectedLabelColor: Colors.grey,
-                onTap: (value) {
-                  controller.tapIndex.value = value;
-                },
-                indicator: const UnderlineTabIndicator(
-                  borderSide: BorderSide(
-                    color: AppColors.buttonColor, // Line color
-                    width: 2, // Line thickness
+      backgroundColor: AppColors.bgColor,
+      body: Obx(
+        () => Column(
+          children: [
+            TabBar(
+              controller: controller.tabController.value,
+              labelColor: Colors.black,
+              unselectedLabelColor: Colors.grey,
+              onTap: (value) {
+                controller.tapIndex.value = value;
+                if (value == 0) {
+                  controller.getOrder("1");
+                } else {
+                  controller.getOrder("2");
+                }
+              },
+              indicator: const UnderlineTabIndicator(
+                borderSide: BorderSide(
+                  color: AppColors.colorF45, // Line color
+                  width: 2, // Line thickness
+                ),
+              ),
+              indicatorSize: TabBarIndicatorSize.label,
+              padding: EdgeInsets.zero,
+              indicatorWeight: 3,
+              // Indicator aligns with the label
+              labelPadding: EdgeInsets.zero,
+              indicatorPadding: const EdgeInsets.only(bottom: 2),
+              // Removes padding around labels
+              tabs: [
+                Tab(
+                  child: Obx(
+                    () => Container(
+                      alignment: Alignment.center,
+                      height: AppSize.displayHeight(context) * 0.3,
+                      decoration: BoxDecoration(
+                        color: controller.tapIndex.value == 0
+                            ? Colors.white
+                            : AppColors.color7B7,
+                        border: Border(
+                          top: const BorderSide(color: AppColors.color262),
+                          right: const BorderSide(color: AppColors.color262),
+                          bottom: BorderSide(
+                              color: controller.tapIndex.value != 0
+                                  ? AppColors.color262
+                                  : Colors.transparent // Border for square
+                              ),
+                        ),
+                      ),
+                      child: Text(
+                        "Current Orders",
+                        style: GoogleFonts.ptSans(
+                          fontSize: Get.height / 55,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.color393,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-                indicatorSize: TabBarIndicatorSize.label,
-                padding: EdgeInsets.zero,
-                indicatorWeight: 3,
-                // Indicator aligns with the label
-                labelPadding: EdgeInsets.zero,
-                indicatorPadding: const EdgeInsets.only(bottom: 2),
-                // Removes padding around labels
-                tabs: [
-                  Tab(
-                    child: Obx(
-                      () => Container(
-                        alignment: Alignment.center,
-                        height: AppSize.displayHeight(context) * 0.3,
-                        decoration: BoxDecoration(
-                          color: controller.tapIndex.value == 0
-                              ? Colors.white
-                              : AppColors.hintColor.withOpacity(0.1),
-                          border: Border(
-                            top: BorderSide(color: Colors.grey.shade700),
-                            right: BorderSide(color: Colors.grey.shade700),
-                            bottom: BorderSide(
-                                color: controller.tapIndex.value != 0
-                                    ? Colors.grey.shade700
-                                    : Colors.transparent // Border for square
-                                ),
-                          ),
+                Tab(
+                  child: Obx(
+                    () => Container(
+                      alignment: Alignment.center,
+                      height: AppSize.displayHeight(context) * 0.3,
+                      decoration: BoxDecoration(
+                        color: controller.tapIndex.value == 1
+                            ? Colors.white
+                            : AppColors.color7B7,
+                        border: Border(
+                          top: const BorderSide(color: AppColors.color262),
+                          right: const BorderSide(color: AppColors.color262),
+                          bottom: BorderSide(
+                              color: controller.tapIndex.value != 1
+                                  ? AppColors.color262
+                                  : Colors.transparent),
+                          left: const BorderSide(color: AppColors.color262),
+                        ), // Border for square
+                      ),
+                      child: Text(
+                        "Past Orders",
+                        style: GoogleFonts.ptSans(
+                          fontSize: Get.height / 55,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.color393,
                         ),
-                        child: const Text("Current Order"),
                       ),
                     ),
                   ),
-                  Tab(
-                    child: Obx(
-                      () => Container(
-                        alignment: Alignment.center,
-                        height: AppSize.displayHeight(context) * 0.3,
-                        decoration: BoxDecoration(
-                          color: controller.tapIndex.value == 1
-                              ? Colors.white
-                              : AppColors.hintColor.withOpacity(0.1),
-                          border: Border(
-                            top: BorderSide(color: Colors.grey.shade700),
-                            right: BorderSide(color: Colors.grey.shade700),
-                            bottom: BorderSide(
-                                color: controller.tapIndex.value != 1
-                                    ? Colors.grey.shade700
-                                    : Colors.transparent),
-                            left: BorderSide(color: Colors.grey.shade700),
-                          ), // Border for square
-                        ),
-                        child: const Text("Past Order"),
-                      ),
-                    ),
-                  ),
+                ),
+              ],
+            ),
+            Expanded(
+              child: TabBarView(
+                physics: NeverScrollableScrollPhysics(),
+                controller: controller.tabController.value,
+                children: [
+                  orderListView(context),
+                  orderListView(context),
                 ],
               ),
-              Expanded(
-                child: TabBarView(
-                  controller: controller.tabController.value,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget orderListView(BuildContext context) {
+    return Obx(
+      () => controller.createOrderLoading.value
+          ? Center(
+              child: Container(
+                height: AppSize.displayHeight(context) * 0.1,
+                width: AppSize.displayHeight(context) * 0.1,
+                margin: const EdgeInsets.symmetric(
+                    horizontal: defaultPadding, vertical: defaultPadding),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(defaultRadius / 2),
+                  ),
+                ),
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                  ),
+                ),
+              ),
+            )
+          : controller.orderList.isNotEmpty
+              ? ListView.separated(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: defaultPadding, vertical: defaultPadding),
+                  itemBuilder: (context, index) {
+                    return PastOrderItem(
+                      onTap: () {
+                        Get.toNamed(RouteConstants.orderItemViewScreen);
+                        controller.getOrderDetail(
+                            controller.orderList[index].id?.toString() ?? "");
+                      },
+                      statusWidget: statusWidget(
+                          context: context,
+                          statusTitle:
+                              controller.orderList[index].ordersStatus ?? ""),
+                      orderWidget: pastOrderWidget(
+                          context: context,
+                          orderDate: controller.orderList[index].ordersDate
+                                  ?.toIso8601String() ??
+                              "",
+                          orderNumber: controller.orderList[index].ordersNo
+                                  ?.toString() ??
+                              "",
+                          royaltyPoint: controller.orderList[index].ordersNo
+                                  ?.toString() ??
+                              ""),
+                      networkImage:
+                          "${ApiConstants.imageBaseUrl}${controller.orderList[index].productCategoryImage?.toString() ?? ""}",
+                      title:
+                          controller.orderList[index].ordersRef?.toString() ??
+                              "",
+                      subTitle: controller.orderList[index].productCategory,
+                    );
+                  },
+                  separatorBuilder: (context, index) => const SizedBox(
+                        height: 10,
+                      ),
+                  itemCount: controller.orderList.length)
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ListView.separated(
-                        itemBuilder: (context, index) {
-                          return PastOrderItem(
-                            networkImage:
-                                "https://s3-alpha-sig.figma.com/img/954b/b39c/f13bbae3b03403cf5d9260278a2657e4?Expires=1734912000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=igtr5z9yMekmsIiCD4NGblY6d0IXmebiD3XUJ~322sSL0VQIU5j6HSn0A7cU3CYFkG1p9XG7qzQY7EdacpjV1rSxcmLnpVlHAjo87Hww69Pazaje2bn2lQoRVjpkBL59B-3tS4-pJ7IGi14k5jOtXXqGEe1awt2KTeTiWGPnDyM~BnqmRZuLiGsL6eDG2x4-jP4~GUQZFUaBVKb5xRuXfetx9zgK4ldg8JlppD0Fu5ThNrXhPyYZmOWqziwJ3Figa97R5vmCHBDQVDHvOHRnRsVKCIxRTij2d~Pzrpfm4x1CStAIeAioST7Doo2LaLxQiZlzQkAzKXFt29h~xjKbng__",
-                            title: "hjhddj",
-                            subTitle: "hhdhasj",
-                          );
-                        },
-                        separatorBuilder: (context, index) => SizedBox(
-                              height: 10,
-                            ),
-                        itemCount: 20),
                     Center(
                       child: Text(
-                        'Past Order Content',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                        "No Data Available",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.ptSans(
+                          color: AppColors.color333,
+                          fontSize: Get.height / 45,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          )),
     );
   }
 }

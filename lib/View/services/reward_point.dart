@@ -34,7 +34,14 @@ class RewardPoint extends GetView<FeedbackController> {
             Get.back();
           },
         ),
-        title: const Text("Reward Point"),
+        title: Text(
+          "Reward Point",
+          style: GoogleFonts.roboto(
+            color: AppColors.color333,
+            fontSize: Get.height / 35,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(

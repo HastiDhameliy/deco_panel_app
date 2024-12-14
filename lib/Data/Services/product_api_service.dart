@@ -25,7 +25,7 @@ class ProductApiService {
     try {
       loading.value = true;
       var url = Uri.parse(ApiConstants.fetchBrandsApiUrl);
-      print(url);
+      debugPrint(url.toString());
       var response = await http.post(url, headers: {
         "Authorization": "Bearer $token", // Correct usage
       }, body: {
@@ -61,9 +61,10 @@ class ProductApiService {
   }) async {
     List<ThicknessData> thicknessList = [];
     try {
+      log('$id/ $subId / $brand');
       loading.value = true;
       var url = Uri.parse(ApiConstants.fetchThicknessApiUrl);
-      print(url);
+      debugPrint(url.toString());
       var response = await http.post(url, headers: {
         "Authorization": "Bearer $token", // Correct usage
       }, body: {
@@ -104,7 +105,7 @@ class ProductApiService {
     try {
       loading.value = true;
       var url = Uri.parse(ApiConstants.fetchSizeApiUrl);
-      print(url);
+      debugPrint(url.toString());
       var response = await http.post(url, headers: {
         "Authorization": "Bearer $token", // Correct usage
       }, body: {
@@ -150,7 +151,7 @@ class ProductApiService {
     try {
       loading.value = true;
       var url = Uri.parse(ApiConstants.fetchProductApiUrl);
-      print(url);
+      debugPrint(url.toString());
       var response = await http.post(url, headers: {
         "Authorization": "Bearer $token", // Correct usage
       }, body: {
@@ -200,7 +201,7 @@ class ProductApiService {
     try {
       loading.value = true;
       var url = Uri.parse(ApiConstants.createCartApiUrl);
-      print(url);
+      debugPrint(url.toString());
       var response = await http.post(url, headers: {
         "Authorization": "Bearer $token", // Correct usage
       }, body: {

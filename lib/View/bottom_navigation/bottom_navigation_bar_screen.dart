@@ -8,33 +8,33 @@ import 'package:deco_flutter_app/View/home/component/drawer_widget.dart';
 import 'package:deco_flutter_app/View/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../Controller/bottom_nav_controller.dart';
+import '../../Controller/past_order_controller.dart';
 import '../order_list/order_list_screen.dart';
 import '../past_order/past_order_screen.dart';
 import '../profile/profile_screen.dart';
 
-var scaffoldKey = GlobalKey<ScaffoldState>();
-
 class AnimatedBottomNavBar extends GetView<BottomNavController> {
   final List<dynamic> icons = [
     AppImages.homeIcon,
-    AppImages.pastOrdersIcon,
     AppImages.orderListIcon,
+    AppImages.cartIcon,
     AppImages.profileIcon,
   ];
 
   final List<dynamic> selectedIcons = [
     AppImages.homeSeIcon,
-    AppImages.pastOrdersFillIcon,
     AppImages.orderListFillIcon,
+    AppImages.cartIcon,
     AppImages.profileFillIcon,
   ];
 
   final List<String> titles = [
     'Home',
-    'Past Order',
     'Order List',
+    'Cart',
     'Profile',
   ];
 
@@ -54,7 +54,7 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
     log(token);
     return Obx(
       () => Scaffold(
-        key: scaffoldKey,
+        key: controller.drawerKey,
         // Assign the scaffold key to the Scaffold widget
         drawerEnableOpenDragGesture: true,
         // Set to true to allow swipe gestures
@@ -82,22 +82,58 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
           leading: IconButton(
             icon: const Icon(Icons.menu_rounded),
             onPressed: () {
-              scaffoldKey.currentState
+              controller.drawerKey.currentState
                   ?.openDrawer(); // Use openDrawer to open the left drawer
             },
           ),
           actions: [
-            IconButton(
-              onPressed: () {},
-              icon: Image.asset(
-                AppImages.cartIcon,
-                height: AppSize.displayHeight(context) * 0.025,
-              ),
-            )
+            if (controller.selectedIndex.value != 2)
+              Stack(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      controller.changeIndex(2);
+                      // Your onPressed action
+                    },
+                    icon: Image.asset(
+                      AppImages.cartIcon,
+                      height: AppSize.displayHeight(context) * 0.025,
+                    ),
+                  ),
+                  Obx(
+                    () => Positioned(
+                      right: 0,
+                      top: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: const BoxDecoration(
+                          color: AppColors.buttonColor,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          '${Get.find<PastOrderController>().cartList.length}', // Observed count
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ).paddingOnly(right: AppSize.displayWidth(context) * 0.02),
           ],
-          title: Text(controller.selectedIndex.value == 0
-              ? "Deco Panel"
-              : titles[controller.selectedIndex.value]),
+          title: Text(
+            controller.selectedIndex.value == 0
+                ? "Deco Panel"
+                : titles[controller.selectedIndex.value],
+            style: GoogleFonts.roboto(
+              color: AppColors.color333,
+              fontSize: Get.height / 35,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ),
         body: Obx(() => screens[controller.selectedIndex.value]),
         bottomNavigationBar: Obx(
@@ -126,11 +162,43 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
               onTap: controller.changeIndex,
               items: List.generate(4, (index) {
                 return BottomNavigationBarItem(
-                  icon: AnimatedIconOrImageWidget(
-                    iconData: controller.selectedIndex.value == index
-                        ? selectedIcons[index]
-                        : icons[index],
-                    isSelected: controller.selectedIndex.value == index,
+                  icon: Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.center,
+                    children: [
+                      AnimatedIconOrImageWidget(
+                        iconData: controller.selectedIndex.value == index
+                            ? selectedIcons[index]
+                            : icons[index],
+                        isSelected: controller.selectedIndex.value == index,
+                      ),
+                      index == 2
+                          ? Obx(
+                              () => Positioned(
+                                right: -7,
+                                top: -9,
+                                child: Container(
+                                  padding: const EdgeInsets.all(5),
+                                  decoration: BoxDecoration(
+                                    color: controller.selectedIndex.value !=
+                                            index
+                                        ? AppColors.color333.withOpacity(0.6)
+                                        : AppColors.buttonColor,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Text(
+                                    '${Get.find<PastOrderController>().cartList.length}', // Observed count
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          : SizedBox(),
+                    ],
                   ),
                   label: titles[index],
                 );

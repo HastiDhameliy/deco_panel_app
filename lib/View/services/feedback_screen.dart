@@ -1,17 +1,18 @@
 import 'package:deco_flutter_app/Controller/feedback_controller.dart';
 import 'package:deco_flutter_app/Data/Services/api_service.dart';
+import 'package:deco_flutter_app/Util/Constant/app_images.dart';
 import 'package:deco_flutter_app/Util/Constant/app_size.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../Util/Constant/app_colors.dart';
 import '../../widget/common_button.dart';
 import '../../widget/text_form_field_widget.dart';
 
 class FeedBackScreen extends GetView<FeedbackController> {
-  FeedBackScreen({super.key});
-
-  final GlobalKey<FormState> _feedbackFormKey = GlobalKey<FormState>();
+  const FeedBackScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,16 +43,24 @@ class FeedBackScreen extends GetView<FeedbackController> {
               Get.back();
             },
           ),
-          title: const Text("Feedback"),
+          title: Text(
+            "Feedback",
+            style: GoogleFonts.roboto(
+              color: AppColors.color333,
+              fontSize: Get.height / 35,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ),
         body: Padding(
           padding: EdgeInsets.symmetric(
               vertical: AppSize.displayHeight(context) * 0.02,
               horizontal: AppSize.displayWidth(context) * 0.04),
           child: Form(
-            key: _feedbackFormKey,
+            key: controller.feedbackFormKey,
             child: Column(
               children: [
+                SvgPicture.asset(AppImages.feedbackBg),
                 SizedBox(
                   height: AppSize.displayHeight(context) * 0.01,
                 ),
@@ -110,7 +119,11 @@ class FeedBackScreen extends GetView<FeedbackController> {
                       isLoading: controller.isLoading.value,
                       disabledColor: AppColors.buttonSplashColor,
                       onPressed: () async {
-                        if (_feedbackFormKey.currentState!.validate()) {
+                        // Close the keyboard
+                        FocusScope.of(context).unfocus();
+
+                        if (controller.feedbackFormKey.currentState!
+                            .validate()) {
                           await ApiService().createFeedbackApi(
                             context: context,
                             loading: controller.isLoading,

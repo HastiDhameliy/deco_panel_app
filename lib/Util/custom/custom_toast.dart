@@ -28,7 +28,7 @@ void customToast(BuildContext context, String msg, ToastType type) {
     Container(
       margin: const EdgeInsets.only(bottom: 50),
       padding: const EdgeInsets.symmetric(
-          horizontal: 24, vertical: defaultPadding / 1.5),
+          horizontal: 24, vertical: defaultPadding / 2),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(defaultRadius / 2),
@@ -50,7 +50,7 @@ void customToast(BuildContext context, String msg, ToastType type) {
               msg,
               style: TextStyle(
                 color: type == ToastType.success ? Colors.black : Colors.white,
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
               maxLines: 3,

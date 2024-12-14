@@ -274,6 +274,7 @@ class CustomRoundedTextField extends StatelessWidget {
       maxLength: maxLength,
       maxLines: maxLines,
       readOnly: readOnly ?? false,
+      onChanged: onChanged,
       decoration: InputDecoration(
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,

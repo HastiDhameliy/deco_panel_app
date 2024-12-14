@@ -12,28 +12,45 @@ class CategoryItemWidget extends StatelessWidget {
   final double? height;
   final double? width;
   final void Function()? onTap;
+  final bool isSelected; // Added parameter for selection state
 
-  const CategoryItemWidget(
-      {super.key,
-      this.networkImage,
-      this.height,
-      this.width,
-      this.title,
-      this.onTap});
+  const CategoryItemWidget({
+    super.key,
+    this.networkImage,
+    this.height,
+    this.width,
+    this.title,
+    this.onTap,
+    this.isSelected = false, // Default value for isSelected
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         InkWell(
           onTap: onTap,
-          child: Container(
-            height: height ?? AppSize.displayWidth(context) * 0.27,
-            width: width ?? AppSize.displayWidth(context) * 0.27,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            // Smooth animation
+            height: isSelected
+                ? height! * 1.2
+                : height ?? AppSize.displayWidth(context) * 0.27,
+            width: isSelected
+                ? width! * 1.2
+                : width ?? AppSize.displayWidth(context) * 0.27,
+            alignment: Alignment.center,
             padding: const EdgeInsets.all(defaultPadding / 4),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.buttonColor),
+              color: AppColors.whiteColor,
+              border: Border.all(
+                color: isSelected ? AppColors.colorF45 : AppColors.buttonColor,
+                // Change border color when selected
+                width: isSelected ? 3 : 1, // Thicker border for selected state
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.05), // Lighter shadow color
@@ -42,6 +59,12 @@ class CategoryItemWidget extends StatelessWidget {
                   offset:
                       const Offset(0, 2), // Lower offset for a lighter shadow
                 ),
+                if (isSelected) // Add an extra shadow effect when selected
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.3),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  ),
               ],
             ),
             child: ClipRRect(
@@ -64,7 +87,9 @@ class CategoryItemWidget extends StatelessWidget {
           style: GoogleFonts.ptSans(
             fontSize: Get.height / 65,
             fontWeight: FontWeight.w700,
-            color: AppColors.color333,
+            color: isSelected
+                ? AppColors.colorF45
+                : AppColors.color333, // Change text color when selected
           ),
         ),
       ],

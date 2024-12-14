@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:deco_flutter_app/Model/offer_model.dart';
 import 'package:deco_flutter_app/Model/sub_category_item_model.dart';
@@ -8,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../Controller/bottom_nav_controller.dart';
 import '../../Model/product_category_model.dart';
 import '../../Model/slider_model.dart';
 import '../../Model/user_detail_model.dart';
@@ -23,24 +25,26 @@ String token = "";
 bool isGuestLogin = false;
 
 class ApiService {
-  Future<bool> mobileApi(
+  Future<dynamic> mobileApi(
       {required String phone,
       required BuildContext context,
       required RxBool loading}) async {
+    var responsed;
     try {
       loading.value = true;
       var url = Uri.parse(ApiConstants.checkMobileApiUrl + phone);
-      print(url);
+      debugPrint(url.toString());
       var response = await http.post(url);
       debugPrint("mobileApi statusCode:- ${response.statusCode}");
       if (response.statusCode == 200) {
         debugPrint("mobileApi response:- ${response.body}");
+        responsed = jsonDecode(response.body);
         if (jsonDecode(response.body)['code'] == 200) {
-          Get.toNamed(RouteConstants.otpScreen, arguments: {"no": phone});
+          Get.offAllNamed(RouteConstants.otpScreen, arguments: {"no": phone});
           customToast(context, jsonDecode(response.body)['msg'] ?? "",
               ToastType.success);
-
           loading.value = false;
+          return responsed;
         } else {
           loading.value = false;
           customToast(
@@ -55,7 +59,83 @@ class ApiService {
       loading.value = false;
       log("mobileApi error:-${e.toString()}");
     }
-    return loading.value;
+    return responsed;
+  }
+
+  Future<bool> updateUserApiUrl({
+    required BuildContext context,
+    required RxBool loading,
+    required String name,
+    required String mobile,
+    required String email,
+    required String address,
+    required String area,
+    required String profilePhoto,
+  }) async {
+    try {
+      loading.value = true;
+
+      // Prepare the multipart request
+      final uri = Uri.parse("${ApiConstants.createUserUrl}");
+      var request = http.MultipartRequest('POST', uri);
+
+      print({
+        'name': name,
+        'email': email,
+        'address': address,
+        'mobile': mobile,
+        'state': area,
+        'user_image': profilePhoto.split('/').last,
+      });
+      request.fields.addAll({
+        'name': name,
+        'email': email,
+        'address': address,
+        'mobile': mobile,
+        'state': area,
+      });
+      if (profilePhoto.isNotEmpty) {
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'user_image',
+            File(profilePhoto).readAsBytesSync(),
+            filename: profilePhoto.split('/').last,
+          ),
+        );
+      }
+
+      // Send the request
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+
+      debugPrint("updateUserApiUrl statusCode:- ${response.statusCode}");
+      debugPrint("updateUserApiUrl response:- $responseBody");
+
+      if (response.statusCode == 200) {
+        var responseJson = jsonDecode(responseBody);
+
+        if (responseJson['code'] == 200) {
+          Get.offAllNamed(RouteConstants.otpScreen, arguments: {"no": mobile});
+          customToast(context, responseJson['msg'] ?? "", ToastType.success);
+          loading.value = false;
+          return true;
+        } else {
+          customToast(context, responseJson['msg'] ?? "", ToastType.error);
+          loading.value = false;
+          return false;
+        }
+      } else {
+        var errorJson = jsonDecode(responseBody);
+        customToast(context, errorJson['msg'] ?? "Error", ToastType.error);
+        loading.value = false;
+        return false;
+      }
+    } catch (e) {
+      customToast(context, "Something Went Wrong", ToastType.error);
+      loading.value = false;
+      log("updateUserApiUrl error:-${e.toString()}");
+      return false;
+    }
   }
 
   Future<bool> loginApi(
@@ -66,7 +146,7 @@ class ApiService {
     try {
       loading.value = true;
       var url = Uri.parse("${ApiConstants.loginApiUrl}$phone&password=123456");
-      print(url);
+      debugPrint(url.toString());
       var response = await http.post(url);
       debugPrint("loginApi statusCode:- ${response.statusCode}");
       if (response.statusCode == 200) {
@@ -79,6 +159,7 @@ class ApiService {
           customToast(context, jsonDecode(response.body)['msg'] ?? "",
               ToastType.success);
           await SessionManager().saveAuthToken(userDetails.data?.token ?? "");
+          BottomNavController con = Get.put(BottomNavController());
           loading.value = false;
         } else {
           loading.value = false;
@@ -104,7 +185,7 @@ class ApiService {
     try {
       loading.value = true;
       var url = Uri.parse(ApiConstants.fetchSliderApiUrl);
-      print(url);
+      debugPrint(url.toString());
       var response = await http.post(url, headers: {
         "Authorization": "Bearer $token", // Correct usage
       });
@@ -139,7 +220,7 @@ class ApiService {
     try {
       loading.value = true;
       var url = Uri.parse(ApiConstants.fetchProductCategoryApiUrl);
-      print(url);
+      debugPrint(url.toString());
       var response = await http.post(url, headers: {
         "Authorization": "Bearer $token", // Correct usage
       });
@@ -170,7 +251,7 @@ class ApiService {
     try {
       loading.value = true;
       var url = Uri.parse(ApiConstants.fetchSubCategoryApiUrl);
-      print(url);
+      debugPrint(url.toString());
       var response = await http.post(url, headers: {
         "Authorization": "Bearer $token", // Correct usage
       }, body: {
@@ -204,7 +285,7 @@ class ApiService {
     try {
       loading.value = true;
       var url = Uri.parse(ApiConstants.fetchProfileApiUrl);
-      print(url);
+      debugPrint(url.toString());
       var response = await http.post(
         url,
         headers: {
@@ -241,7 +322,7 @@ class ApiService {
     try {
       loading.value = true;
       var url = Uri.parse(ApiConstants.addFeedbackApiUrl);
-      print(url);
+      debugPrint(url.toString());
       var response = await http.post(url, headers: {
         "Authorization": "Bearer $token", // Correct usage
       }, body: {
@@ -281,7 +362,7 @@ class ApiService {
     try {
       loading.value = true;
       var url = Uri.parse(ApiConstants.fetchOfferApiUrl);
-      print(url);
+      debugPrint(url.toString());
       var response = await http.post(
         url,
         headers: {
@@ -307,63 +388,6 @@ class ApiService {
     }
     getdata();
     return offerModel;
-  }
-
-  Future<bool> updateUserApiUrl({
-    required BuildContext context,
-    required RxBool loading,
-    required String name,
-    required String email,
-    required String address,
-    required String area,
-    required String state,
-    required String pincode,
-  }) async {
-    try {
-      loading.value = true;
-      final Map<String, String> queryParams = {
-        'user_id': userDetails.data?.user?.id.toString() ?? "",
-        'full_name': name,
-        'email': email,
-        'address': address,
-        'state': state,
-        "area": area,
-        'pincode': pincode,
-      };
-      final Uri url = Uri.parse(ApiConstants.updateProfileApiUrl)
-          .replace(queryParameters: queryParams);
-      print(url);
-      var response = await http.post(
-        url,
-        headers: {
-          "Authorization": "Bearer $token", // Correct usage
-        },
-      );
-      debugPrint("updateUserApiUrl statusCode:- ${response.statusCode}");
-      if (response.statusCode == 200) {
-        debugPrint("updateUserApiUrl response:- ${response.body}");
-
-        if (jsonDecode(response.body)['code'] == 200) {
-          customToast(context, jsonDecode(response.body)['msg'] ?? "",
-              ToastType.success);
-          loading.value = false;
-        } else {
-          customToast(
-              context, jsonDecode(response.body)['msg'] ?? "", ToastType.error);
-          loading.value = false;
-        }
-      } else {
-        customToast(
-            context, jsonDecode(response.body)['msg'] ?? "", ToastType.error);
-        loading.value = false;
-      }
-    } catch (e) {
-      customToast(context, "Something Went Wrong", ToastType.error);
-      loading.value = false;
-      log("updateUserApiUrl error:-${e.toString()}");
-    }
-    getdata();
-    return loading.value;
   }
 
   getdata() async {

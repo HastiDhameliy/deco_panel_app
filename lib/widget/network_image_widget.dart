@@ -19,8 +19,7 @@ class CommonNetworkImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FadeInImage(
-      placeholder: const NetworkImage(
-          "https://media.istockphoto.com/id/1222357475/vector/image-preview-icon-picture-placeholder-for-website-or-ui-ux-design-vector-illustration.jpg?s=612x612&w=0&k=20&c=KuCo-dRBYV7nz2gbk4J9w1WtTAgpTdznHu55W9FjimE="),
+      placeholder: const NetworkImage(""),
       // Placeholder image
       image: NetworkImage(imageUrl ?? ""),
       // Network image
@@ -28,6 +27,14 @@ class CommonNetworkImage extends StatelessWidget {
       fadeInDuration: fadeInDuration,
       // Smooth fade-in effect
       placeholderFit: fit,
+      placeholderErrorBuilder: (context, error, stackTrace) {
+        return const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+          ),
+        );
+      },
+
       imageErrorBuilder: (context, error, stackTrace) {
         // Handle error with fallback image
         return const SizedBox();

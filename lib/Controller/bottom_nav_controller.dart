@@ -1,3 +1,5 @@
+import 'package:deco_flutter_app/Controller/past_order_controller.dart';
+import 'package:deco_flutter_app/Controller/profile_controller.dart';
 import 'package:deco_flutter_app/Data/Services/api_service.dart';
 import 'package:deco_flutter_app/Model/product_model.dart';
 import 'package:deco_flutter_app/Util/custom/custom_toast.dart';
@@ -18,7 +20,9 @@ class BottomNavController extends GetxController
   RxBool isLoadingCategory = false.obs;
   RxBool isLoadingOffer = false.obs;
   RxBool isLoadingSubCategory = false.obs;
+  GlobalKey<ScaffoldState> drawerKey = GlobalKey<ScaffoldState>();
 
+  RxBool isLoadingTrue = false.obs;
   RxBool isLoadingBrand = false.obs;
   RxBool isLoadingThick = false.obs;
   RxBool isLoadingSize = false.obs;
@@ -42,9 +46,28 @@ class BottomNavController extends GetxController
 
   RxInt qty = 1.obs;
   RxInt currentSliderIndex = 1.obs;
+  RxInt selectedProductIndex = (-1).obs;
+  RxMap<int, bool> isLoadingMap = <int, bool>{}.obs;
+
+  void setLoading(int index, bool isLoading) {
+    isLoadingMap[index] = isLoading;
+    update();
+  }
 
   void changeIndex(int index) {
     selectedIndex.value = index;
+    switch (index) {
+      case 1:
+        if (Get.find<PastOrderController>().tapIndex.value == 0) {
+          Get.find<PastOrderController>().getOrder("1");
+        } else {
+          Get.find<PastOrderController>().getOrder("2");
+        }
+      case 2:
+        Get.find<PastOrderController>().getOrderList();
+      case 3:
+        Get.find<ProfileController>().getProfileData();
+    }
   }
 
   var currentPage = 0.obs; // Observable to track the current page
@@ -76,6 +99,7 @@ class BottomNavController extends GetxController
     required BuildContext context,
   }) async {
     try {
+      isLoadingTrue.value = true;
       // Start by fetching the brand list
       brandList.value = await ProductApiService().fetchBrandApiUrl(
         loading: isLoadingBrand,
@@ -92,7 +116,7 @@ class BottomNavController extends GetxController
 
       // Proceed to fetch thickness data
       thicknessList.value = await ProductApiService().fetchThicknessApiUrl(
-        loading: isLoadingThick,
+        loading: isLoadingBrand,
         id: id,
         subId: subId,
         brand: brandList.first.productsBrand ?? "",
@@ -107,7 +131,7 @@ class BottomNavController extends GetxController
 
       // Proceed to fetch size data
       sizeList.value = await ProductApiService().fetchSizeApiUrl(
-        loading: isLoadingThick,
+        loading: isLoadingBrand,
         id: id,
         subId: subId,
         brand: brandList.first.productsBrand ?? "",
@@ -123,7 +147,7 @@ class BottomNavController extends GetxController
       }
 
       productItemList.value = await ProductApiService().fetchProductApiUrl(
-        loading: isLoadingProduct,
+        loading: isLoadingBrand,
         id: id,
         subId: subId,
         brand: brandList.first.productsBrand ?? "",
@@ -140,7 +164,10 @@ class BottomNavController extends GetxController
             context, 'No Product found for add to cart', ToastType.warning);
         return;
       }
+      isLoadingTrue.value = false;
     } catch (e) {
+      isLoadingTrue.value = false;
+
       customToast(context, 'Error fetching data', ToastType.error);
     }
   }

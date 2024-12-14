@@ -30,7 +30,7 @@ class HomeScreen extends GetView<BottomNavController> {
                     SizedBox(
                       height: Get.height / 50,
                     ),
-                    AnimatedCarousel(),
+                    const AnimatedCarousel(),
                     SizedBox(
                       height: Get.height / 50,
                     ),

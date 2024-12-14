@@ -9,6 +9,7 @@ class ApiConstants {
 
   static String checkMobileApiUrl = '${baseUrl}check-mobile?mobile=';
   static String loginApiUrl = '${baseUrl}login?mobile=';
+  static String createUserUrl = '${baseUrl}create-user';
 
   /// ////////////// FETCH ALL CATEGORY AND SLIDER ///////////////////
   static String fetchSliderApiUrl = '${baseUrl}fetch-slider';
@@ -30,6 +31,7 @@ class ApiConstants {
   static String createCartApiUrl = '${baseUrl}create-cart';
   static String fetchCartApiUrl = '${baseUrl}fetch-cart';
   static String updateCartApiUrl = '${baseUrl}update-cart';
+  static String deleteCartApiUrl = '${baseUrl}delete-cart-single-item';
 
   /// /////////////   //// Offer ////   ///////////////////
 
@@ -43,4 +45,9 @@ class ApiConstants {
 
   /// ////////////// FETCH FEEDBACK ///////////////////
   static String addFeedbackApiUrl = '${baseUrl}create-feedback';
+
+  /// ////////////// FETCH ORDER ///////////////////
+  static String getOrderApiUrl = '${baseUrl}fetch-order';
+  static String createOrderApiUrl = '${baseUrl}create-order';
+  static String createOrderByIdApiUrl = '${baseUrl}fetch-order-by-id';
 }
