@@ -15,6 +15,8 @@ import '../../widget/common_button.dart';
 import '../../widget/radio_button.dart';
 import '../../widget/text_form_field_widget.dart';
 
+OtpController otpController = Get.put(OtpController());
+
 class LoginScreen extends GetView<LoginController> {
   LoginScreen({super.key});
 
@@ -127,139 +129,110 @@ class LoginScreen extends GetView<LoginController> {
                             FocusScope.of(context).unfocus();
                             if (controller.loginStoreFormKey.currentState!
                                 .validate()) {
-                              await ApiService()
-                                  .mobileApi(
-                                      phone: controller
-                                          .numberController.value.text,
-                                      context: context,
-                                      loading: controller.isLoading)
-                                  .then(
-                                (value) async {
-                                  if (value['code'] == 200) {
-                                    /*mobileNumberController.password.value =
-                                          value['data'];*/
-                                    // await mobileNumberController.auth
-                                    //     .setSettings(appVerificationDisabledForTesting: false);
-                                    await FirebaseAuth.instance
-                                        .verifyPhoneNumber(
-                                      forceResendingToken: 4,
-                                      phoneNumber:
-                                          "+91${controller.numberController.value.value.text.trim()}",
-                                      timeout: const Duration(seconds: 60),
-                                      verificationCompleted:
-                                          (PhoneAuthCredential
-                                              credential) async {
-                                        //     mobileNumberController.isButtonLoading.value =
-                                        // false;
-                                        controller.auth
-                                            .signInWithCredential(credential);
-                                      },
-                                      verificationFailed:
-                                          (FirebaseAuthException e) async {
-                                        print(
-                                            'fError : ${e.code},${e.message}');
-                                        if (e.code == 'invalid-phone-number') {
-                                          // mobileNumberController.isButtonLoading.value =
-                                          // false;
+                              try {
+                                controller.isLoading.value = true;
+
+                                // Call your API
+                                final value = await ApiService().mobileApi(
+                                  phone: controller.numberController.value.text.trim(),
+                                  context: context,
+                                  loading: controller.isLoading,
+                                );
+
+                                if (value['code'] == 200) {
+                                  await FirebaseAuth.instance.setSettings(
+                                    appVerificationDisabledForTesting:
+                                        false, // Ensure this is false for production
+                                  );
+
+                                  await FirebaseAuth.instance.verifyPhoneNumber(
+                                    phoneNumber:
+                                        "+91${controller.numberController.value.text.trim()}",
+                                    timeout: const Duration(seconds: 60),
+                                    forceResendingToken: 4,
+                                    verificationCompleted:
+                                        (PhoneAuthCredential credential) async {
+                                      await controller.auth
+                                          .signInWithCredential(credential);
+                                    },
+                                    verificationFailed:
+                                        (FirebaseAuthException e) async {
+                                      controller.isLoading.value = false;
+
+                                      switch (e.code) {
+                                        case 'invalid-phone-number':
                                           customToast(
-                                              context,
-                                              "The provided phone number is not valid.",
-                                              ToastType.warning);
-                                          print(
-                                              'The provided phone number is not valid.');
-                                        } else if (e.code ==
-                                            'too-many-requests') {
-                                          // mobileNumberController.isButtonLoading.value =
-                                          // false;
-                                          customToast(
-                                              context,
-                                              "Sorry, You are many requested\nPlease try again later...",
-                                              ToastType.warning);
-                                        } else if (e.code == 'unknown') {
-                                          // await otpController
-                                          //     .postCheckMobileApi({
-                                          //   "mobile": mobileNumberController
-                                          //       .mobileNumberController
-                                          //       .value
-                                          //       .text
-                                          //       .trim(),
-                                          // });
-                                          // mobileNumberController.isButtonLoading.value =
-                                          // false;
-                                          customToast(
-                                              context,
-                                              "Sorry, Internal error has occurred\nPlease try again later...",
-                                              ToastType.error);
-                                        } else {
-                                          // mobileNumberController.isButtonLoading.value =
-                                          // false;
-                                          customToast(
-                                              context,
-                                              "Sorry, Something want wrong\nPlease try again later...",
-                                              ToastType.warning);
-                                        }
-                                      },
-                                      codeSent: (String verificationId,
-                                          int? resendToken) {
-                                        OtpController otpController =
-                                            Get.put(OtpController());
-                                        otpController.resendToken.value =
-                                            resendToken ?? 0;
-                                        otpController.verify.value =
-                                            verificationId;
-                                        customToast(
                                             context,
-                                            "OTP Sent Successfully",
-                                            ToastType.success);
-                                        Get.offAllNamed(
-                                            RouteConstants.otpScreen,
-                                            arguments: {
-                                              "no": controller
-                                                  .numberController.value.text
-                                            });
+                                            "The provided phone number is not valid.",
+                                            ToastType.warning,
+                                          );
+                                          break;
+                                        case 'too-many-requests':
+                                          customToast(
+                                            context,
+                                            "Too many requests. Please try again later.",
+                                            ToastType.warning,
+                                          );
+                                          break;
+                                        default:
+                                          customToast(
+                                            context,
+                                            "Error: ${e.message ?? "Something went wrong"}",
+                                            ToastType.error,
+                                          );
+                                      }
+                                    },
+                                    codeSent: (String verificationId,
+                                        int? resendToken) {
+                                      otpController.resendToken.value =
+                                          resendToken ?? 0;
+                                      otpController.verify.value = verificationId;
+                                      print("Verify :$verificationId");
+                                      print("Verify :${otpController.verify.value}");
+                                      otpController.update();
 
-                                        // mobileNumberController.isButtonLoading.value =
-                                        // false;
-                                        // Get.to(() => OtpScreen(
-                                        //   // verify: verificationId,
-                                        //   // phoneNumber: controller
-                                        //   //     .mobileNumberController
-                                        //   //     .value
-                                        //   //     .text
-                                        //   //     .trim(),
-                                        // ));
-                                      },
-                                      codeAutoRetrievalTimeout:
-                                          (String verificationId) {
-                                        //     mobileNumberController.isButtonLoading.value =
-                                        // false;
+                                      customToast(
+                                        context,
+                                        "OTP Sent Successfully",
+                                        ToastType.success,
+                                      );
 
-                                        // ShowToast.showToast(
-                                        //   "The provided phone number is not valid.",
-                                        //   showSuccess: false,
-                                        // );
-                                      },
-                                    );
-                                  } else {
-                                    /* Get.to(() => SignNameScreen(
-                                            phoneNumber: mobileNumberController
-                                                .mobileNumberController
-                                                .value
-                                                .text
-                                                .trim(),
-                                          ));*/
-                                  }
-                                },
-                              ).catchError(
-                                (error) {
-                                  customToast(context, error.toString(),
-                                      ToastType.warning);
-                                },
-                              );
+                                      Get.offAllNamed(RouteConstants.otpScreen,
+                                          arguments: {
+                                            "no": controller
+                                                .numberController.value.text,
+                                          });
+                                    },
+                                    codeAutoRetrievalTimeout:
+                                        (String verificationId) {
+                                      customToast(
+                                        context,
+                                        "OTP auto-retrieval timeout.",
+                                        ToastType.warning,
+                                      );
+                                    },
+                                  );
+                                }
+                                else {
+                                  customToast(
+                                    context,
+                                    "Failed to send the OTP. Please try again.",
+                                    ToastType.error,
+                                  );
+                                }
+                              } catch (error) {
+                                customToast(
+                                  context,
+                                  "Error: ${error.toString()}",
+                                  ToastType.error,
+                                );
+                              } finally {
+                                controller.isLoading.value = false;
+                              }
                             }
                           },
                         ),
-                      )
+                      ),
                     ],
                   ),
                   SizedBox(

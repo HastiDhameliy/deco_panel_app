@@ -41,8 +41,8 @@ class ApiService {
         responsed = jsonDecode(response.body);
         if (jsonDecode(response.body)['code'] == 200) {
           //Get.offAllNamed(RouteConstants.otpScreen, arguments: {"no": phone});
-          customToast(context, jsonDecode(response.body)['msg'] ?? "",
-              ToastType.success);
+          // customToast(context, jsonDecode(response.body)['msg'] ?? "",
+          //     ToastType.success);
           loading.value = false;
           return responsed;
         } else {
@@ -62,7 +62,7 @@ class ApiService {
     return responsed;
   }
 
-  Future<bool> updateUserApiUrl({
+  Future<dynamic> updateUserApiUrl({
     required BuildContext context,
     required RxBool loading,
     required String name,
@@ -115,20 +115,19 @@ class ApiService {
         var responseJson = jsonDecode(responseBody);
 
         if (responseJson['code'] == 200) {
-          Get.offAllNamed(RouteConstants.otpScreen, arguments: {"no": mobile});
-          customToast(context, responseJson['msg'] ?? "", ToastType.success);
+          // customToast(context, responseJson['msg'] ?? "", ToastType.success);
           loading.value = false;
-          return true;
+          return responseJson;
         } else {
-          customToast(context, responseJson['msg'] ?? "", ToastType.error);
+          // customToast(context, responseJson['msg'] ?? "", ToastType.error);
           loading.value = false;
-          return false;
+          return responseJson;
         }
       } else {
         var errorJson = jsonDecode(responseBody);
         customToast(context, errorJson['msg'] ?? "Error", ToastType.error);
         loading.value = false;
-        return false;
+        return errorJson;
       }
     } catch (e) {
       customToast(context, "Something Went Wrong", ToastType.error);

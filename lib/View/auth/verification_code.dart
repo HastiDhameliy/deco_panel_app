@@ -1,6 +1,7 @@
 import 'package:another_telephony/telephony.dart';
 import 'package:deco_flutter_app/Data/Services/api_service.dart';
 import 'package:deco_flutter_app/Util/Constant/app_size.dart';
+import 'package:deco_flutter_app/View/auth/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -23,7 +24,7 @@ class OtpScreen extends StatefulWidget {
 
 class _OtpScreenState extends State<OtpScreen> {
   LoginController loginController = Get.put(LoginController());
-  OtpController controller = Get.put(OtpController());
+  // OtpController controller = Get.put(OtpController());
   int backspaceCount = 0;
   final telephony = Telephony.instance;
   RxBool checkTermsCondition = false.obs;
@@ -45,14 +46,12 @@ class _OtpScreenState extends State<OtpScreen> {
           print("sms received : ${message.body}");
           // verify if we are reading the correct sms or not
 
-          if (message.body!.contains("singleclick-1597e.firebaseapp.com")) {
+          if (message.body!.contains("deco-panel.firebaseapp.com")) {
             String otpCode = message.body!.substring(0, 6);
-            List<String> otpCharacters = otpCode.split('');
             print("OTP::::::$otpCode");
             setState(
               () {
-                controller.otpController.value.text =
-                    otpCode.substring(0, 6).toString();
+                otpController.otpController.value.text = otpCode;
               },
             );
           }
@@ -113,8 +112,8 @@ class _OtpScreenState extends State<OtpScreen> {
         }
       },
       codeSent: (String verificationId, int? resendToken) {
-        controller.resendToken.value = resendToken ?? 0;
-        controller.verify.value = verificationId;
+        otpController.resendToken.value = resendToken ?? 0;
+        otpController.verify.value = verificationId;
         customToast(context, "OTP Sent Successfully", ToastType.success);
         listenToIncomingSMS(context);
         // mobileNumberController.isButtonLoading.value =
@@ -191,7 +190,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   textDirection: TextDirection.ltr,
                   child: Pinput(
                     length: 6,
-                    controller: controller.otpController.value,
+                    controller: otpController.otpController.value,
                     hapticFeedbackType: HapticFeedbackType.lightImpact,
                     followingPinTheme: PinTheme(
                       width: AppSize.displayWidth(context) * 0.14,
@@ -222,7 +221,7 @@ class _OtpScreenState extends State<OtpScreen> {
                       debugPrint('Entered OTP: $verificationCode');
                     },
                     onChanged: (code) {
-                      controller.isAbleFun();
+                      otpController.isAbleFun();
                       debugPrint('OTP Changed: $code');
                     },
                     focusedPinTheme: PinTheme(
@@ -274,12 +273,17 @@ class _OtpScreenState extends State<OtpScreen> {
                         color: AppColors.color449,
                       ),
                     ),
-                    Text(
-                      " Resend",
-                      style: GoogleFonts.ptSans(
-                        fontSize: Get.height / 50,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.colorF45,
+                    GestureDetector(
+                      onTap: () {
+                        sendOTP();
+                      },
+                      child: Text(
+                        " Resend",
+                        style: GoogleFonts.ptSans(
+                          fontSize: Get.height / 50,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.colorF45,
+                        ),
                       ),
                     ),
                   ],
@@ -295,17 +299,51 @@ class _OtpScreenState extends State<OtpScreen> {
                       () => CommonButton(
                         width: AppSize.displayWidth(context) * 0.5,
                         text: 'Verify the Code',
-                        isLoading: controller.isLoading.value,
-                        isEnabled: controller.isAble.value,
-                        onPressed: () {
+                        isLoading: otpController.isLoading.value,
+                        isEnabled: otpController.isAble.value,
+                        onPressed: () async {
                           FocusScope.of(context).unfocus();
-                          ApiService().loginApi(
-                              phone: Get.arguments != null &&
-                                      Get.arguments["no"] != null
-                                  ? Get.arguments["no"]
-                                  : "",
-                              context: context,
-                              loading: controller.isLoading);
+                          print(otpController.verify.value);
+                          try {
+                            PhoneAuthCredential credential =
+                            PhoneAuthProvider.credential(
+                              verificationId: otpController.verify.value,
+                              smsCode: otpController.otpController.value.text,
+                            );
+                            await FirebaseAuth.instance
+                                .signInWithCredential(credential);
+                            // controller.postCheckMobileApi({"mobile": mobileNumberController.mobileNumberController.value.text.trim()});
+                            ApiService().loginApi(
+                                phone: Get.arguments != null &&
+                                    Get.arguments["no"] != null
+                                    ? Get.arguments["no"]
+                                    : "",
+                                context: context,
+                                loading: otpController.isLoading);
+                          } on FirebaseAuthException catch (error) {
+                            if (error.code ==
+                                'invalid-verification-code') {
+                              customToast(
+                                context,
+                                "Invalid OTP",
+                                ToastType.warning,
+                              );
+                            } else {
+                              customToast(
+                                context,
+                                "Error: ${"Something went wrong"}",
+                                ToastType.error,
+                              );
+                            }
+                          } catch (e) {
+                            customToast(
+                              context,
+                              "Error: ${e}",
+                              ToastType.error,
+                            );
+                            print("error >>>>>>>>>>>>> $e");
+                          }
+
                         },
                       ),
                     )

@@ -1,14 +1,17 @@
 import 'package:deco_flutter_app/Util/Constant/app_images.dart';
 import 'package:deco_flutter_app/Util/Constant/app_size.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../Controller/login_controller.dart';
+import '../../Controller/otp_controller.dart';
 import '../../Data/Services/api_service.dart';
 import '../../RoutesManagment/routes.dart';
 import '../../Util/Constant/app_colors.dart';
+import '../../Util/custom/custom_toast.dart';
 import '../../widget/common_button.dart';
 import '../../widget/text_form_field_widget.dart';
 
@@ -217,12 +220,87 @@ class EditProfileScreen extends GetView<LoginController> {
                           name: controller.nameCon.value.text,
                           email: controller.emailCon.value.text,
                           address: controller.addressCon.value.text,
-                        )
-                            .then(
-                          (value) {
-                            //controller.getProfileData();
-                            /* controller.clearAllController();
-                            Get.back();*/
+                        ).then(
+                          (value) async {
+                            if (value['code'] == 200) {
+                              await FirebaseAuth.instance.setSettings(
+                                appVerificationDisabledForTesting:
+                                false, // Ensure this is false for production
+                              );
+
+                              await FirebaseAuth.instance.verifyPhoneNumber(
+                                phoneNumber:
+                                "+91${controller.mobileCon.value.text.trim()}",
+                                timeout: const Duration(seconds: 60),
+                                forceResendingToken: 4,
+                                verificationCompleted:
+                                    (PhoneAuthCredential credential) async {
+                                  await controller.auth
+                                      .signInWithCredential(credential);
+                                },
+                                verificationFailed:
+                                    (FirebaseAuthException e) async {
+                                  controller.isLoading.value = false;
+
+                                  switch (e.code) {
+                                    case 'invalid-phone-number':
+                                      customToast(
+                                        context,
+                                        "The provided phone number is not valid.",
+                                        ToastType.warning,
+                                      );
+                                      break;
+                                    case 'too-many-requests':
+                                      customToast(
+                                        context,
+                                        "Too many requests. Please try again later.",
+                                        ToastType.warning,
+                                      );
+                                      break;
+                                    default:
+                                      customToast(
+                                        context,
+                                        "Error: ${e.message ?? "Something went wrong"}",
+                                        ToastType.error,
+                                      );
+                                  }
+                                },
+                                codeSent: (String verificationId,
+                                    int? resendToken) {
+                                  OtpController otpController =
+                                  Get.put(OtpController());
+                                  otpController.resendToken.value =
+                                      resendToken ?? 0;
+                                  otpController.verify.value =
+                                      verificationId;
+
+                                  customToast(
+                                    context,
+                                    "OTP Sent Successfully",
+                                    ToastType.success,
+                                  );
+
+                                  Get.offAllNamed(RouteConstants.otpScreen,
+                                      arguments: {
+                                        "no": controller.mobileCon.value.text,
+                                      });
+                                },
+                                codeAutoRetrievalTimeout:
+                                    (String verificationId) {
+                                  customToast(
+                                    context,
+                                    "OTP auto-retrieval timeout.",
+                                    ToastType.warning,
+                                  );
+                                },
+                              );
+                            } else {
+                              customToast(
+                                context,
+                                "Failed to send the OTP. Please try again.",
+                                ToastType.error,
+                              );
+                            }
                           },
                         );
                       }

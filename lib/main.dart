@@ -12,7 +12,7 @@ Future<void> main() async {
     options: const FirebaseOptions(
       apiKey: 'AIzaSyBal17y1PxbqIAM7jl5AlPTnM5AXibiVI0',
       appId: '1:872125002397:android:35d6af0685296fe640da74',
-      messagingSenderId: '885031020744',
+      messagingSenderId: '872125002397',
       projectId: 'deco-panel',
       storageBucket: 'deco-panel.firebasestorage.app',
     ),
