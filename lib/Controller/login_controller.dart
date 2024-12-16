@@ -25,6 +25,15 @@ class LoginController extends GetxController with WidgetsBindingObserver {
   Rx<TextEditingController> imageCon = TextEditingController().obs;
 
   @override
+  void onInit() {
+    // TODO: implement onInit
+    if (Get.arguments != null && Get.arguments["Number"] != null) {
+      mobileCon.value.text = Get.arguments["Number"];
+    }
+    super.onInit();
+  }
+
+  @override
   void onReady() {
     // TODO: implement onReady
     isAbleFun();

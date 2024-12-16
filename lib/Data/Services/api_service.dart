@@ -47,6 +47,13 @@ class ApiService {
           return responsed;
         } else {
           loading.value = false;
+
+          if ((jsonDecode(response.body)['msg'] ?? "") ==
+              "Mobile Number is Not Registered") {
+            Get.offAllNamed(RouteConstants.editProfileScreen, arguments: {
+              "Number": phone,
+            });
+          }
           customToast(
               context, jsonDecode(response.body)['msg'] ?? "", ToastType.error);
         }
