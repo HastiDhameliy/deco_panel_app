@@ -134,12 +134,17 @@ class LoginScreen extends GetView<LoginController> {
 
                                 // Call your API
                                 final value = await ApiService().mobileApi(
-                                  phone: controller.numberController.value.text.trim(),
+                                  phone: controller.numberController.value.text
+                                      .trim(),
                                   context: context,
                                   loading: controller.isLoading,
                                 );
 
                                 if (value['code'] == 200) {
+                                  await FirebaseAuth.instance.setSettings(
+                                    appVerificationDisabledForTesting:
+                                        false, // Ensure this is false for production
+                                  );
                                   await FirebaseAuth.instance.verifyPhoneNumber(
                                     phoneNumber:
                                         "+91${controller.numberController.value.text.trim()}",
@@ -181,9 +186,11 @@ class LoginScreen extends GetView<LoginController> {
                                         int? resendToken) {
                                       otpController.resendToken.value =
                                           resendToken ?? 0;
-                                      otpController.verify.value = verificationId;
+                                      otpController.verify.value =
+                                          verificationId;
                                       print("Verify :$verificationId");
-                                      print("Verify :${otpController.verify.value}");
+                                      print(
+                                          "Verify :${otpController.verify.value}");
                                       otpController.update();
 
                                       customToast(
@@ -207,8 +214,7 @@ class LoginScreen extends GetView<LoginController> {
                                       );
                                     },
                                   );
-                                }
-                                else {
+                                } else {
                                   customToast(
                                     context,
                                     "Failed to send the OTP. Please try again.",

@@ -7,13 +7,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../Controller/login_controller.dart';
-import '../../Controller/otp_controller.dart';
 import '../../Data/Services/api_service.dart';
 import '../../RoutesManagment/routes.dart';
 import '../../Util/Constant/app_colors.dart';
 import '../../Util/custom/custom_toast.dart';
 import '../../widget/common_button.dart';
 import '../../widget/text_form_field_widget.dart';
+import 'login_screen.dart';
 
 class EditProfileScreen extends GetView<LoginController> {
   const EditProfileScreen({super.key});
@@ -220,17 +220,18 @@ class EditProfileScreen extends GetView<LoginController> {
                           name: controller.nameCon.value.text,
                           email: controller.emailCon.value.text,
                           address: controller.addressCon.value.text,
-                        ).then(
+                        )
+                            .then(
                           (value) async {
                             if (value['code'] == 200) {
                               await FirebaseAuth.instance.setSettings(
                                 appVerificationDisabledForTesting:
-                                false, // Ensure this is false for production
+                                    false, // Ensure this is false for production
                               );
 
                               await FirebaseAuth.instance.verifyPhoneNumber(
                                 phoneNumber:
-                                "+91${controller.mobileCon.value.text.trim()}",
+                                    "+91${controller.mobileCon.value.text.trim()}",
                                 timeout: const Duration(seconds: 60),
                                 forceResendingToken: 4,
                                 verificationCompleted:
@@ -265,14 +266,11 @@ class EditProfileScreen extends GetView<LoginController> {
                                       );
                                   }
                                 },
-                                codeSent: (String verificationId,
-                                    int? resendToken) {
-                                  OtpController otpController =
-                                  Get.put(OtpController());
+                                codeSent:
+                                    (String verificationId, int? resendToken) {
                                   otpController.resendToken.value =
                                       resendToken ?? 0;
-                                  otpController.verify.value =
-                                      verificationId;
+                                  otpController.verify.value = verificationId;
 
                                   customToast(
                                     context,
