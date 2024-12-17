@@ -140,11 +140,6 @@ class LoginScreen extends GetView<LoginController> {
                                 );
 
                                 if (value['code'] == 200) {
-                                  await FirebaseAuth.instance.setSettings(
-                                    appVerificationDisabledForTesting:
-                                        false, // Ensure this is false for production
-                                  );
-
                                   await FirebaseAuth.instance.verifyPhoneNumber(
                                     phoneNumber:
                                         "+91${controller.numberController.value.text.trim()}",

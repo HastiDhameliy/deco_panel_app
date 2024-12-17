@@ -188,6 +188,7 @@ class ApiService {
   Future<SliderModel> fetchSliderApi(
       {required BuildContext context, required RxBool loading}) async {
     SliderModel sliderModel = SliderModel();
+    token = (await SessionManager().getAuthToken()) ?? "";
     try {
       loading.value = true;
       var url = Uri.parse(ApiConstants.fetchSliderApiUrl);
