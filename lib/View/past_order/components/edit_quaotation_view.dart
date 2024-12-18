@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../Controller/past_order_controller.dart';
 import '../../../Data/Providers/api_constants.dart';
+import '../../../Data/Services/order_api_service.dart';
 import '../../order_list/components/past_order_item_widget.dart';
 
 class EditQuotationView extends GetView<PastOrderController> {
@@ -51,61 +52,92 @@ class EditQuotationView extends GetView<PastOrderController> {
         ),
       ),
       body: SafeArea(
-        child: Obx(() => controller
-                .quotationModel.value.quotationSub!.isNotEmpty
-            ? ListView.separated(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: defaultPadding, vertical: defaultPadding),
-                    itemBuilder: (context, index) {
-                      return PastOrderItem(
-                        size:
-                            "${controller.quotationModel.value.quotationSub![index].quotationSubSize1 ?? ""}*${controller.quotationModel.value.quotationSub![index].quotationSubSize2 ?? ""} ${controller.quotationModel.value.quotationSub![index].quotationSubSizeUnit ?? ""}",
-                        brand: controller.quotationModel.value
-                                .quotationSub![index].quotationSubBrand ??
-                            "",
-                        thickness:
-                            "${controller.quotationModel.value.quotationSub![index].quotationSubThickness ?? ""} ${controller.quotationModel.value.quotationSub![index].quotationSubUnit ?? ""}",
-                        onDeletePressed: () {
-                          deleteDialog(
-                            context: context,
-                            onPressed: () async {
-                              await controller.deleteCartItemApi(
-                                  context,
-                                  controller.quotationModel.value
-                                          .quotationSub![index].id
-                                          ?.toString() ??
-                                      "");
-                              controller.quotationModel.value.quotationSub!
-                                  .removeAt(index);
-                              Get.back();
-                            },
-                          );
-                        },
-                        initialQuo: controller.quotationModel.value
-                            .quotationSub![index].quotationSubAmount,
-                        initialValue: controller.quotationModel.value
-                            .quotationSub![index].quotationSubQuantity,
-                        onQtyValueChanged: (val) async {},
-                        onQty2ValueChanged: (val) async {},
-                        networkImage:
-                            "${ApiConstants.imageBaseUrl}${controller.quotationModel.value.quotationSub![index].productCategoryImage?.toString() ?? ""}",
-                        title: controller.quotationModel.value
-                                .quotationSub![index].quotationSubBrand
-                                ?.toString() ??
-                            "",
-                        subTitle: controller.quotationModel.value
-                                .quotationSub![index].quotationSubProductId
-                                ?.toString() ??
-                            "",
-                      );
-                    },
-                    separatorBuilder: (context, index) => const SizedBox(
-                          height: 10,
+        child: Obx(
+          () => controller.quotationModel.value.quotationSub!.isNotEmpty
+              ? ListView.separated(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: defaultPadding, vertical: defaultPadding),
+                      itemBuilder: (context, index) {
+                        return PastOrderItem(
+                          size:
+                              "${controller.quotationModel.value.quotationSub![index].quotationSubSize1 ?? ""}*${controller.quotationModel.value.quotationSub![index].quotationSubSize2 ?? ""} ${controller.quotationModel.value.quotationSub![index].quotationSubSizeUnit ?? ""}",
+                          brand: controller.quotationModel.value
+                                  .quotationSub![index].quotationSubBrand ??
+                              "",
+                          thickness:
+                              "${controller.quotationModel.value.quotationSub![index].quotationSubThickness ?? ""} ${controller.quotationModel.value.quotationSub![index].quotationSubUnit ?? ""}",
+                          onDeletePressed: () {
+                            deleteDialog(
+                              context: context,
+                              onPressed: () async {
+                                await controller.deleteCartItemApi(
+                                    context,
+                                    controller.quotationModel.value
+                                            .quotationSub![index].id
+                                            ?.toString() ??
+                                        "");
+                                controller.quotationModel.value.quotationSub!
+                                    .removeAt(index);
+                                Get.back();
+                              },
+                            );
+                          },
+                          initialQuo: controller.quotationModel.value
+                                  .quotationSub![index].quotationSubRate
+                                  ?.toInt() ??
+                              0,
+                          initialValue: controller.quotationModel.value
+                                  .quotationSub![index].quotationSubQuantity ??
+                              0,
+                          onQtyValueChanged: (val) async {
+                            controller.quotationModel.value.quotationSub![index]
+                                .quotationSubQuantity = val;
+
+                            print(controller.quotationModel.value
+                                .quotationSub![index].quotationSubQuantity);
+                          },
+                          onQty2ValueChanged: (val) async {
+                            controller.quotationModel.value.quotationSub![index]
+                                .quotationSubRate = val.toDouble();
+                            print(controller.quotationModel.value
+                                .quotationSub![index].quotationSubRate);
+                          },
+                          networkImage:
+                              "${ApiConstants.imageBaseUrl}${controller.quotationModel.value.quotationSub![index].productCategoryImage?.toString() ?? ""}",
+                          title: controller.quotationModel.value
+                                  .quotationSub![index].quotationSubBrand
+                                  ?.toString() ??
+                              "",
+                          subTitle: controller.quotationModel.value
+                                  .quotationSub![index].quotationSubProductId
+                                  ?.toString() ??
+                              "",
+                        );
+                      },
+                      separatorBuilder: (context, index) => const SizedBox(
+                            height: 10,
+                          ),
+                      itemCount:
+                          controller.quotationModel.value.quotationSub!.length)
+                  .paddingOnly(bottom: AppSize.displayHeight(context) * 0.05)
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Center(
+                      child: Text(
+                        "No Quotation Available",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.ptSans(
+                          color: AppColors.color333,
+                          fontSize: Get.height / 45,
+                          fontWeight: FontWeight.w700,
                         ),
-                    itemCount:
-                        controller.quotationModel.value.quotationSub!.length)
-                .paddingOnly(bottom: AppSize.displayHeight(context) * 0.05)
-            : const SizedBox()),
+                      ),
+                    ),
+                  ],
+                ),
+        ),
       ),
       bottomSheet: Container(
         height: AppSize.displayHeight(context) * 0.12,
@@ -115,32 +147,47 @@ class EditQuotationView extends GetView<PastOrderController> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CommonButton(
-              text: "Update Quotation",
-              isEnabled:
-                  controller.quotationModel.value.quotationSub!.isNotEmpty,
-              isLoading: controller.updateQuoLoading.value,
-              onPressed: () async {
-                /* for (var item
-                    in controller.quotationModel.value.quotationSub!) {
-                  await OrderApiService().updateQuotationApiUrl(
-                      loading: controller.updateQuoLoading,
-                      isDone: ,
-                      context: context,
-                      orderref:
+            Obx(
+              () => CommonButton(
+                text: "Update Quotation",
+                isEnabled:
+                    controller.quotationModel.value.quotationSub!.isNotEmpty,
+                isLoading: controller.updateQuoLoading.value,
+                onPressed: () async {
+                  for (var item
+                      in controller.quotationModel.value.quotationSub!) {
+                    int i = controller.quotationModel.value.quotationSub!
+                            .indexOf(item) +
+                        1;
+                    print(i);
+                    print(controller.quotationModel.value.quotationSub!.length);
+                    await OrderApiService().updateQuotationApiUrl(
+                        loading: controller.updateQuoLoading,
+                        isDone: i ==
+                            controller
+                                .quotationModel.value.quotationSub!.length,
+                        context: context,
+                        orderref: controller
+                                .quotationModel.value.quotation?.orderRef ??
+                            "",
+                        quotationSubQuantity:
+                            item.quotationSubQuantity?.toString() ?? "",
+                        quotationSubRate:
+                            item.quotationSubRate?.toString() ?? "",
+                        quotationSubProductId:
+                            item.quotationSubProductId?.toString() ?? "",
+                        id: item.id?.toString() ?? "");
+                    if (i ==
+                        controller.quotationModel.value.quotationSub!.length) {
+                      controller.getQuotationDetail(
                           controller.quotationModel.value.quotation?.orderRef ??
-                              "",
-                      quotationSubQuantity:
-                          item.quotationSubQuantity?.toString() ?? "",
-                      quotationSubRate:
-                          item.quotationSubAmount?.toString() ?? "",
-                      quotationSubProductId:
-                          item.quotationSubProductId?.toString() ?? "",
-                      id: item.id?.toString() ?? "");
-                }
-                controller.updateQuoLoading.value = false;*/
-              },
-            ),
+                              "");
+                      Get.back();
+                    }
+                  }
+                },
+              ),
+            )
           ],
         ),
       ),

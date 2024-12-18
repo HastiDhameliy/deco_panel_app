@@ -29,9 +29,9 @@ class DynamicTable extends StatelessWidget {
     return Table(
       border: TableBorder.all(color: Colors.black),
       columnWidths: {
-        0: const FlexColumnWidth(4), // Product column is larger
+        0: const FlexColumnWidth(5), // Product column is larger
         for (int i = 1; i < headers.length; i++)
-          i: i == 3 ? const FlexColumnWidth(2) : const FlexColumnWidth(1.5),
+          i: i == 3 ? const FlexColumnWidth(2) : const FlexColumnWidth(1),
       },
       children: [
         // Header Row
@@ -59,7 +59,7 @@ class DynamicTable extends StatelessWidget {
           return TableRow(
             children: [
               _buildCell(
-                  "${row.productCategory ?? ''}, ${row.productSubCategory ?? ''}\nBrand: ${row.quotationSubBrand ?? ''}\nSize: ${row.quotationSubSize1 ?? ''} X ${row.quotationSubSize2 ?? ''} ${row.quotationSubSizeUnit ?? ''}",
+                  "${row.productCategory ?? ''}, ${row.productSubCategory ?? ''} Brand: ${row.quotationSubBrand ?? ''} Size: ${row.quotationSubSize1 ?? ''} X ${row.quotationSubSize2 ?? ''} ${row.quotationSubSizeUnit ?? ''}",
                   context: context),
               _buildCell(row.quotationSubQuantity?.toString() ?? "",
                   context: context),
@@ -121,12 +121,12 @@ class DynamicTable extends StatelessWidget {
 
   Widget _buildCell(String? text, {required BuildContext context}) {
     return Container(
-      height: AppSize.displayHeight(context) * 0.06,
+      height: AppSize.displayHeight(context) * 0.08,
       padding: const EdgeInsets.all(8.0),
       child: Text(
         text ?? "",
         style: GoogleFonts.ptSans(
-          fontSize: Get.height / 65,
+          fontSize: Get.height / 70,
           fontWeight: FontWeight.w400,
           color: AppColors.color333,
         ),
@@ -209,16 +209,23 @@ Future<void> generateAndSharePDF(BuildContext context, List<QuotationSub> datas,
       },
     ),
   );
+  try {
+    // Save the PDF to a file
+    final output = await getApplicationDocumentsDirectory();
+    final filePath = "${output.path}/quotation_table.pdf";
+    final pdfFile = File(filePath);
+    var path = await pdfFile.writeAsBytes(await pdf.save());
 
-  // Save the PDF to a file
-  final output = await getApplicationDocumentsDirectory();
-  final filePath = "${output.path}/quotation_table.pdf";
-  final pdfFile = File(filePath);
-  var path = await pdfFile.writeAsBytes(await pdf.save());
-
-  await Share.shareXFiles(
-    [XFile(path.path)],
-  );
+    // Share the PDF file using Share plugin
+    await Share.shareXFiles(
+      [XFile(path.path)], // Share the saved PDF file
+      text: 'Check out this quotation!', // Optional message
+    ).then((value) {
+      if (value.status != ShareResultStatus.success) {
+        path.delete();
+      }
+    });
+  } catch (e) {}
 }
 
 // Helper method to build PDF cells

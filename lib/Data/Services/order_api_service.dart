@@ -349,12 +349,12 @@ class OrderApiService {
           debugPrint("Decoded response: $responseJson");
 
           if (responseJson['code'] == 200) {
+            debugPrint(isDone.toString());
             if (isDone) {
               customToast(
-                  context, responseJson['msg'] ?? "", ToastType.warning);
+                  context, responseJson['msg'] ?? "", ToastType.success);
+              loading.value = false;
             }
-            // customToast(context, "Quantity Updated", ToastType.success);
-            loading.value = false;
           } else {
             customToast(context, responseJson['msg'] ?? "", ToastType.warning);
             loading.value = false;

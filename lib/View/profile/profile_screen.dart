@@ -12,34 +12,55 @@ class ProfileScreen extends GetView<ProfileController> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Obx(
-        () => Column(
-          children: [
-            SizedBox(
-              height: AppSize.displayHeight(context) * 0.02,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Container(
-                  height: AppSize.displayWidth(context) * 0.42,
-                  width: AppSize.displayWidth(context) * 0.42,
-                  padding: const EdgeInsets.all(defaultPadding / 4),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.buttonColor),
-                    shape: BoxShape.circle,
-                  ),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.all(
-                        Radius.circular(defaultRadius * 50)),
-                    child: Image.asset(
-                      AppImages.panelImage,
-                      fit: BoxFit.cover,
-                    ),
+    return Obx(
+      () => controller.isLoading.value
+          ? Center(
+              child: Container(
+                height: AppSize.displayHeight(context) * 0.1,
+                width: AppSize.displayHeight(context) * 0.1,
+                margin: const EdgeInsets.symmetric(
+                    horizontal: defaultPadding, vertical: defaultPadding),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(defaultRadius / 2),
                   ),
                 ),
-                /*InkWell(
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                  ),
+                ),
+              ),
+            )
+          : controller.useDataModel.value.data != null
+              ? SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: AppSize.displayHeight(context) * 0.02,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Container(
+                            height: AppSize.displayWidth(context) * 0.42,
+                            width: AppSize.displayWidth(context) * 0.42,
+                            padding: const EdgeInsets.all(defaultPadding / 4),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: AppColors.buttonColor),
+                              shape: BoxShape.circle,
+                            ),
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.all(
+                                  Radius.circular(defaultRadius * 50)),
+                              child: Image.asset(
+                                AppImages.panelImage,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          /*InkWell(
                 onTap: () {
                   Get.to(const EditProfileScreen());
                 },
@@ -62,46 +83,68 @@ class ProfileScreen extends GetView<ProfileController> {
                     ),
                   ],
                 ),
-              ),*/
-              ],
-            ),
-            SizedBox(
-              height: AppSize.displayHeight(context) * 0.02,
-            ),
-            commonProfileTextWidget(
-              title: "Name:",
-              subTitle: controller.useDataModel.value.data?.fullName ?? "",
-              context: context,
-            ),
-            commonProfileTextWidget(
-              title: "Mobile:",
-              subTitle: controller.useDataModel.value.data?.mobile ?? "",
-              context: context,
-            ),
-            commonProfileTextWidget(
-              title: "Email:",
-              subTitle: controller.useDataModel.value.data?.email ?? "",
-              context: context,
-            ),
-            commonProfileTextWidget(
-              title: "Area:",
-              subTitle: controller.useDataModel.value.data?.state ?? "",
-              context: context,
-            ),
-            commonProfileTextWidget(
-              title: "Address:",
-              subTitle: controller.useDataModel.value.data?.address ?? "",
-              context: context,
-            ),
-            // SizedBox(
-            //   height: AppSize.displayHeight(context) * 0.1,
-            // ),
-            const Divider(
-              color: AppColors.buttonColor,
-            ),
-          ],
-        ),
-      ),
+                            ),*/
+                        ],
+                      ),
+                      SizedBox(
+                        height: AppSize.displayHeight(context) * 0.02,
+                      ),
+                      commonProfileTextWidget(
+                        title: "Name:",
+                        subTitle:
+                            controller.useDataModel.value.data?.fullName ?? "",
+                        context: context,
+                      ),
+                      commonProfileTextWidget(
+                        title: "Mobile:",
+                        subTitle:
+                            controller.useDataModel.value.data?.mobile ?? "",
+                        context: context,
+                      ),
+                      commonProfileTextWidget(
+                        title: "Email:",
+                        subTitle:
+                            controller.useDataModel.value.data?.email ?? "",
+                        context: context,
+                      ),
+                      commonProfileTextWidget(
+                        title: "Area:",
+                        subTitle:
+                            controller.useDataModel.value.data?.state ?? "",
+                        context: context,
+                      ),
+                      commonProfileTextWidget(
+                        title: "Address:",
+                        subTitle:
+                            controller.useDataModel.value.data?.address ?? "",
+                        context: context,
+                      ),
+                      // SizedBox(
+                      //   height: AppSize.displayHeight(context) * 0.1,
+                      // ),
+                      const Divider(
+                        color: AppColors.buttonColor,
+                      ),
+                    ],
+                  ),
+                )
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Center(
+                      child: Text(
+                        "No Data Available",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.ptSans(
+                          color: AppColors.color333,
+                          fontSize: Get.height / 45,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
     );
   }
 

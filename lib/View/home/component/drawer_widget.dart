@@ -93,11 +93,17 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               leading: Image.asset(
                 drawerItem[index][2],
                 color: AppColors.buttonColor,
-                height: index == 5
-                    ? AppSize.displayHeight(context) * 0.022
-                    : index == 6
-                        ? AppSize.displayHeight(context) * 0.03
-                        : AppSize.displayHeight(context) * 0.027,
+                height: userType == 1
+                    ? index == 5
+                        ? AppSize.displayHeight(context) * 0.022
+                        : index == 6
+                            ? AppSize.displayHeight(context) * 0.03
+                            : AppSize.displayHeight(context) * 0.027
+                    : index == 4
+                        ? AppSize.displayHeight(context) * 0.022
+                        : index == 5
+                            ? AppSize.displayHeight(context) * 0.03
+                            : AppSize.displayHeight(context) * 0.027,
               ),
               title: Text(
                 drawerItem[index][1],
