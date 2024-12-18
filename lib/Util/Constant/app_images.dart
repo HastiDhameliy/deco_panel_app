@@ -22,4 +22,5 @@ class AppImages {
   static const String tokenIcon = "assets/token.png";
   static const String feedbackBg = "assets/feedbackPageSVG.svg";
   static const String aboutUsBg = "assets/about_us_bg.png";
+  static const String receiptIcon = "assets/receipt.png";
 }

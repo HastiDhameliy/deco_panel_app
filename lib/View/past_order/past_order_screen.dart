@@ -1,4 +1,6 @@
 import 'package:deco_flutter_app/Data/Providers/api_constants.dart';
+import 'package:deco_flutter_app/Data/Services/api_service.dart';
+import 'package:deco_flutter_app/Util/Constant/app_images.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -152,14 +154,42 @@ class PastOrderScreen extends GetView<PastOrderController> {
                   itemBuilder: (context, index) {
                     return PastOrderItem(
                       onTap: () {
-                        Get.toNamed(RouteConstants.orderItemViewScreen);
+                        /* Get.toNamed(RouteConstants.orderItemViewScreen);
                         controller.getOrderDetail(
-                            controller.orderList[index].id?.toString() ?? "");
+                            controller.orderList[index].id?.toString() ?? "");*/
                       },
-                      statusWidget: statusWidget(
-                          context: context,
-                          statusTitle:
-                              controller.orderList[index].ordersStatus ?? ""),
+                      statusWidget: userType != 1 &&
+                              controller.tapIndex.value != 0
+                          ? InkWell(
+                              onTap: () {
+                                Get.toNamed(RouteConstants.quotationView);
+                                controller.getQuotationDetail(controller
+                                        .orderList[index].ordersRef
+                                        ?.toString() ??
+                                    "");
+                              },
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                    AppImages.receiptIcon,
+                                    height:
+                                        AppSize.displayHeight(context) * 0.022,
+                                  ).paddingOnly(
+                                      right:
+                                          AppSize.displayWidth(context) * 0.01),
+                                  Icon(
+                                    Icons.arrow_forward_ios_outlined,
+                                    color: AppColors.color42B,
+                                    size: AppSize.displayHeight(context) * 0.02,
+                                  )
+                                ],
+                              ),
+                            )
+                          : statusWidget(
+                              context: context,
+                              statusTitle:
+                                  controller.orderList[index].ordersStatus ??
+                                      ""),
                       orderWidget: pastOrderWidget(
                           context: context,
                           orderDate: controller.orderList[index].ordersDate

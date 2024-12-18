@@ -9,7 +9,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 
 import '../../Controller/login_controller.dart';
-import '../../Controller/otp_controller.dart';
 import '../../Util/Constant/app_colors.dart';
 import '../../Util/Constant/app_images.dart';
 import '../../Util/custom/custom_toast.dart';
@@ -24,6 +23,7 @@ class OtpScreen extends StatefulWidget {
 
 class _OtpScreenState extends State<OtpScreen> {
   LoginController loginController = Get.put(LoginController());
+
   // OtpController controller = Get.put(OtpController());
   int backspaceCount = 0;
   final telephony = Telephony.instance;
@@ -304,46 +304,52 @@ class _OtpScreenState extends State<OtpScreen> {
                         onPressed: () async {
                           FocusScope.of(context).unfocus();
                           print(otpController.verify.value);
-                          try {
-                            PhoneAuthCredential credential =
-                            PhoneAuthProvider.credential(
-                              verificationId: otpController.verify.value,
-                              smsCode: otpController.otpController.value.text,
-                            );
-                            await FirebaseAuth.instance
-                                .signInWithCredential(credential);
-                            // controller.postCheckMobileApi({"mobile": mobileNumberController.mobileNumberController.value.text.trim()});
-                            ApiService().loginApi(
-                                phone: Get.arguments != null &&
-                                    Get.arguments["no"] != null
-                                    ? Get.arguments["no"]
-                                    : "",
-                                context: context,
-                                loading: otpController.isLoading);
-                          } on FirebaseAuthException catch (error) {
-                            if (error.code ==
-                                'invalid-verification-code') {
-                              customToast(
-                                context,
-                                "Invalid OTP",
-                                ToastType.warning,
-                              );
-                            } else {
-                              customToast(
-                                context,
-                                "Error: ${"Something went wrong"}",
-                                ToastType.error,
-                              );
-                            }
-                          } catch (e) {
-                            customToast(
-                              context,
-                              "Error: ${e}",
-                              ToastType.error,
-                            );
-                            print("error >>>>>>>>>>>>> $e");
-                          }
-
+                          ApiService().loginApi(
+                              phone: Get.arguments != null &&
+                                      Get.arguments["no"] != null
+                                  ? Get.arguments["no"]
+                                  : "",
+                              context: context,
+                              loading: otpController.isLoading);
+                          // try {
+                          //   PhoneAuthCredential credential =
+                          //   PhoneAuthProvider.credential(
+                          //     verificationId: otpController.verify.value,
+                          //     smsCode: otpController.otpController.value.text,
+                          //   );
+                          //   await FirebaseAuth.instance
+                          //       .signInWithCredential(credential);
+                          //   // controller.postCheckMobileApi({"mobile": mobileNumberController.mobileNumberController.value.text.trim()});
+                          //   ApiService().loginApi(
+                          //       phone: Get.arguments != null &&
+                          //           Get.arguments["no"] != null
+                          //           ? Get.arguments["no"]
+                          //           : "",
+                          //       context: context,
+                          //       loading: otpController.isLoading);
+                          // } on FirebaseAuthException catch (error) {
+                          //   if (error.code ==
+                          //       'invalid-verification-code') {
+                          //     customToast(
+                          //       context,
+                          //       "Invalid OTP",
+                          //       ToastType.warning,
+                          //     );
+                          //   } else {
+                          //     customToast(
+                          //       context,
+                          //       "Error: ${"Something went wrong"}",
+                          //       ToastType.error,
+                          //     );
+                          //   }
+                          // } catch (e) {
+                          //   customToast(
+                          //     context,
+                          //     "Error: ${e}",
+                          //     ToastType.error,
+                          //   );
+                          //   print("error >>>>>>>>>>>>> $e");
+                          // }
                         },
                       ),
                     )

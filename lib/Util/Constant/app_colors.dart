@@ -19,6 +19,7 @@ class AppColors {
 
   static const Color buttonColor = Color(0xffCF762E);
   static const Color colorF45 = Color(0xffC87F45);
+  static const Color color42B = Color(0xffAB642B);
   static const Color color449 = Color(0xFF414449);
   static const Color colorCBC = Color(0xFFBCBCBC);
   static const Color color333 = Color(0xFF333333);

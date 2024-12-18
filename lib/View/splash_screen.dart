@@ -26,7 +26,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   getUserData() async {
     token = (await SessionManager().getAuthToken()) ?? "";
-
+    if (token != "") {
+      ApiService().getdata();
+    }
     // print(userToken);
     // print(userRole);
 

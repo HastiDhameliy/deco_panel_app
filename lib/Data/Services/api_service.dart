@@ -21,6 +21,7 @@ import '../Providers/session_manager.dart';
 
 UserModel userDetails = UserModel();
 String token = "";
+int userType = 1;
 
 bool isGuestLogin = false;
 
@@ -167,12 +168,14 @@ class ApiService {
           await SessionManager().saveAuthToken(userDetails.data?.token ?? "");
           BottomNavController con = Get.put(BottomNavController());
           loading.value = false;
+          getdata();
         } else {
           loading.value = false;
           customToast(
               context, jsonDecode(response.body)['msg'] ?? "", ToastType.error);
         }
       } else {
+        getdata();
         loading.value = false;
         customToast(
             context, jsonDecode(response.body)['msg'] ?? "", ToastType.error);
@@ -190,28 +193,30 @@ class ApiService {
     SliderModel sliderModel = SliderModel();
     token = (await SessionManager().getAuthToken()) ?? "";
     try {
-      loading.value = true;
-      var url = Uri.parse(ApiConstants.fetchSliderApiUrl);
-      debugPrint(url.toString());
-      var response = await http.post(url, headers: {
-        "Authorization": "Bearer $token", // Correct usage
-      });
-      debugPrint("fetchSliderApi statusCode:- ${response.statusCode}");
-      if (response.statusCode == 200) {
-        debugPrint("fetchSliderApi response:- ${response.body}");
+      if (userType == 1) {
+        loading.value = true;
+        var url = Uri.parse(ApiConstants.fetchSliderApiUrl);
+        debugPrint(url.toString());
+        var response = await http.post(url, headers: {
+          "Authorization": "Bearer $token", // Correct usage
+        });
+        debugPrint("fetchSliderApi statusCode:- ${response.statusCode}");
+        if (response.statusCode == 200) {
+          debugPrint("fetchSliderApi response:- ${response.body}");
 
-        if (jsonDecode(response.body)['code'] == 200) {
-          sliderModel = sliderModelFromJson(response.body);
-          loading.value = false;
+          if (jsonDecode(response.body)['code'] == 200) {
+            sliderModel = sliderModelFromJson(response.body);
+            loading.value = false;
+          } else {
+            loading.value = false;
+            customToast(context, jsonDecode(response.body)['msg'] ?? "",
+                ToastType.error);
+          }
         } else {
           loading.value = false;
           customToast(
               context, jsonDecode(response.body)['msg'] ?? "", ToastType.error);
         }
-      } else {
-        loading.value = false;
-        customToast(
-            context, jsonDecode(response.body)['msg'] ?? "", ToastType.error);
       }
     } catch (e) {
       loading.value = false;
@@ -225,24 +230,26 @@ class ApiService {
       {required RxBool loading}) async {
     ProductCategoryModel productCategoryModel = ProductCategoryModel();
     try {
-      loading.value = true;
-      var url = Uri.parse(ApiConstants.fetchProductCategoryApiUrl);
-      debugPrint(url.toString());
-      var response = await http.post(url, headers: {
-        "Authorization": "Bearer $token", // Correct usage
-      });
-      debugPrint("fetchSliderApi statusCode:- ${response.statusCode}");
-      if (response.statusCode == 200) {
-        debugPrint("fetchSliderApi response:- ${response.body}");
+      if (userType == 1) {
+        loading.value = true;
+        var url = Uri.parse(ApiConstants.fetchProductCategoryApiUrl);
+        debugPrint(url.toString());
+        var response = await http.post(url, headers: {
+          "Authorization": "Bearer $token", // Correct usage
+        });
+        debugPrint("fetchSliderApi statusCode:- ${response.statusCode}");
+        if (response.statusCode == 200) {
+          debugPrint("fetchSliderApi response:- ${response.body}");
 
-        if (jsonDecode(response.body)['code'] == 200) {
-          productCategoryModel = productCategoryModelFromJson(response.body);
-          loading.value = false;
+          if (jsonDecode(response.body)['code'] == 200) {
+            productCategoryModel = productCategoryModelFromJson(response.body);
+            loading.value = false;
+          } else {
+            loading.value = false;
+          }
         } else {
           loading.value = false;
         }
-      } else {
-        loading.value = false;
       }
     } catch (e) {
       loading.value = false;
@@ -256,26 +263,29 @@ class ApiService {
       {required RxBool loading, required String productCtgId}) async {
     SubCategoryModel subCategoryModel = SubCategoryModel();
     try {
-      loading.value = true;
-      var url = Uri.parse(ApiConstants.fetchSubCategoryApiUrl);
-      debugPrint(url.toString());
-      var response = await http.post(url, headers: {
-        "Authorization": "Bearer $token", // Correct usage
-      }, body: {
-        "product_ctg_id": productCtgId
-      });
-      debugPrint("fetchSubCategoryApiUrl statusCode:- ${response.statusCode}");
-      if (response.statusCode == 200) {
-        debugPrint("fetchSubCategoryApiUrl response:- ${response.body}");
+      if (userType == 1) {
+        loading.value = true;
+        var url = Uri.parse(ApiConstants.fetchSubCategoryApiUrl);
+        debugPrint(url.toString());
+        var response = await http.post(url, headers: {
+          "Authorization": "Bearer $token", // Correct usage
+        }, body: {
+          "product_ctg_id": productCtgId
+        });
+        debugPrint(
+            "fetchSubCategoryApiUrl statusCode:- ${response.statusCode}");
+        if (response.statusCode == 200) {
+          debugPrint("fetchSubCategoryApiUrl response:- ${response.body}");
 
-        if (jsonDecode(response.body)['code'] == 200) {
-          subCategoryModel = subCategoryModelFromJson(response.body);
-          loading.value = false;
+          if (jsonDecode(response.body)['code'] == 200) {
+            subCategoryModel = subCategoryModelFromJson(response.body);
+            loading.value = false;
+          } else {
+            loading.value = false;
+          }
         } else {
           loading.value = false;
         }
-      } else {
-        loading.value = false;
       }
     } catch (e) {
       loading.value = false;
@@ -367,27 +377,29 @@ class ApiService {
   }) async {
     List<Offerbanner> offerModel = [];
     try {
-      loading.value = true;
-      var url = Uri.parse(ApiConstants.fetchOfferApiUrl);
-      debugPrint(url.toString());
-      var response = await http.post(
-        url,
-        headers: {
-          "Authorization": "Bearer $token", // Correct usage
-        },
-      );
-      debugPrint("fetchOfferApi statusCode:- ${response.statusCode}");
-      if (response.statusCode == 200) {
-        debugPrint("fetchOfferApi response:- ${response.body}");
+      if (userType == 1) {
+        loading.value = true;
+        var url = Uri.parse(ApiConstants.fetchOfferApiUrl);
+        debugPrint(url.toString());
+        var response = await http.post(
+          url,
+          headers: {
+            "Authorization": "Bearer $token", // Correct usage
+          },
+        );
+        debugPrint("fetchOfferApi statusCode:- ${response.statusCode}");
+        if (response.statusCode == 200) {
+          debugPrint("fetchOfferApi response:- ${response.body}");
 
-        if (jsonDecode(response.body)['code'] == 200) {
-          offerModel = offerModelFromJson(response.body).offerbanner ?? [];
-          loading.value = false;
+          if (jsonDecode(response.body)['code'] == 200) {
+            offerModel = offerModelFromJson(response.body).offerbanner ?? [];
+            loading.value = false;
+          } else {
+            loading.value = false;
+          }
         } else {
           loading.value = false;
         }
-      } else {
-        loading.value = false;
       }
     } catch (e) {
       loading.value = false;
@@ -401,5 +413,6 @@ class ApiService {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
     userDetails = userModelFromJson(preferences.getString("userModel") ?? "");
     token = userDetails.data?.token ?? "";
+    userType = userDetails.data?.user?.userTypeId ?? 1;
   }
 }

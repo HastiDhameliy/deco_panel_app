@@ -20,7 +20,9 @@ class PastOrderItem extends GetView<PastOrderController> {
   final Widget? orderWidget;
   final Widget? statusWidget;
   final int? initialValue;
+  final int? initialQuo;
   final Function(int)? onQtyValueChanged;
+  final Function(int)? onQty2ValueChanged;
   final RxBool? value;
   final void Function(bool?)? onChanged;
   final void Function()? onDeletePressed;
@@ -31,7 +33,9 @@ class PastOrderItem extends GetView<PastOrderController> {
       this.title,
       this.onTap,
       this.initialValue,
+      this.initialQuo,
       this.onQtyValueChanged,
+      this.onQty2ValueChanged,
       this.orderWidget,
       this.subTitle,
       this.statusWidget,
@@ -157,17 +161,28 @@ class PastOrderItem extends GetView<PastOrderController> {
                                     onValueChanged:
                                         onQtyValueChanged ?? (p0) {},
                                   ),
-                                  const Spacer(),
-                                  IconButton(
-                                    onPressed: onDeletePressed ?? () {},
-                                    icon: Image.asset(
-                                      AppImages.deleteIcon,
-                                      height: AppSize.displayHeight(context) *
-                                          0.022,
+                                  if (initialQuo != null)
+                                    PlusMinusContainer(
+                                      initialValue: initialQuo!,
+                                      onValueChanged:
+                                          onQty2ValueChanged ?? (p0) {},
+                                    ).paddingOnly(
+                                        left: AppSize.displayWidth(context) *
+                                            0.04)
+                                  else if (initialQuo == null) ...[
+                                    const Spacer(),
+                                    IconButton(
+                                      onPressed: onDeletePressed ?? () {},
+                                      icon: Image.asset(
+                                        AppImages.deleteIcon,
+                                        height: AppSize.displayHeight(context) *
+                                            0.022,
+                                      ),
                                     ),
-                                  ),
+                                  ]
                                 ],
-                              ),
+                              ).paddingOnly(
+                                  top: AppSize.displayHeight(context) * 0.01),
                             ],
                           )
                     ],

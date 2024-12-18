@@ -50,4 +50,7 @@ class ApiConstants {
   static String getOrderApiUrl = '${baseUrl}fetch-order';
   static String createOrderApiUrl = '${baseUrl}create-order';
   static String createOrderByIdApiUrl = '${baseUrl}fetch-order-by-id';
+  static String getAdminOrderApiUrl = '${baseUrl}fetch-admin-order';
+  static String getQuotationApiUrl = '${baseUrl}fetch-quotation';
+  static String updateQuotationApiUrl = '${baseUrl}update-quotation';
 }

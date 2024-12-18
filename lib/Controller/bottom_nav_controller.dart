@@ -56,17 +56,30 @@ class BottomNavController extends GetxController
 
   void changeIndex(int index) {
     selectedIndex.value = index;
-    switch (index) {
-      case 1:
-        if (Get.find<PastOrderController>().tapIndex.value == 0) {
-          Get.find<PastOrderController>().getOrder("1");
-        } else {
-          Get.find<PastOrderController>().getOrder("2");
-        }
-      case 2:
-        Get.find<PastOrderController>().getOrderList();
-      case 3:
-        Get.find<ProfileController>().getProfileData();
+    if (userType == 1) {
+      switch (index) {
+        case 1:
+          if (Get.find<PastOrderController>().tapIndex.value == 0) {
+            Get.find<PastOrderController>().getOrder("1");
+          } else {
+            Get.find<PastOrderController>().getOrder("2");
+          }
+        case 2:
+          Get.find<PastOrderController>().getOrderList();
+        case 3:
+          Get.find<ProfileController>().getProfileData();
+      }
+    } else if (userType == 2) {
+      switch (index) {
+        case 0:
+          if (Get.find<PastOrderController>().tapIndex.value == 0) {
+            Get.find<PastOrderController>().getOrder("1");
+          } else {
+            Get.find<PastOrderController>().getOrder("2");
+          }
+        case 1:
+          Get.find<ProfileController>().getProfileData();
+      }
     }
   }
 
@@ -75,7 +88,6 @@ class BottomNavController extends GetxController
   @override
   void onInit() {
     // TODO: implement onInit
-    getData();
     super.onInit();
   }
 
@@ -170,5 +182,12 @@ class BottomNavController extends GetxController
 
       customToast(context, 'Error fetching data', ToastType.error);
     }
+  }
+
+  @override
+  void onReady() {
+    // TODO: implement onReady
+    if (userType == 1) getData();
+    super.onReady();
   }
 }

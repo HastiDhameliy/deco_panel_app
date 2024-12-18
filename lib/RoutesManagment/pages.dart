@@ -9,8 +9,10 @@ import '../View/bottom_navigation/bottom_navigation_bar_screen.dart';
 import '../View/home/component/category_item_screen.dart';
 import '../View/home/home_screen.dart';
 import '../View/order_list/order_list_screen.dart';
+import '../View/past_order/components/edit_quaotation_view.dart';
 import '../View/past_order/components/order_item_view.dart';
 import '../View/past_order/past_order_screen.dart';
+import '../View/past_order/quatation_screen.dart';
 import '../View/services/about_us_screen.dart';
 import '../View/services/feedback_screen.dart';
 import '../View/services/reward_point.dart';
@@ -70,6 +72,14 @@ class AllPages {
       GetPage(
           name: RouteConstants.orderItemViewScreen,
           page: () => const OrderItemViewScreen(),
+          binding: ScreenBindings()),
+      GetPage(
+          name: RouteConstants.quotationView,
+          page: () => const QuotationView(),
+          binding: ScreenBindings()),
+      GetPage(
+          name: RouteConstants.editQuotationView,
+          page: () => const EditQuotationView(),
           binding: ScreenBindings()),
     ];
   }

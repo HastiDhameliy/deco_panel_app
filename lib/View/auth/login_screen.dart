@@ -1,6 +1,5 @@
 import 'package:deco_flutter_app/Data/Services/api_service.dart';
 import 'package:deco_flutter_app/Util/custom/custom_toast.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -141,79 +140,84 @@ class LoginScreen extends GetView<LoginController> {
                                 );
 
                                 if (value['code'] == 200) {
-                                  await FirebaseAuth.instance.setSettings(
-                                    appVerificationDisabledForTesting:
-                                        false, // Ensure this is false for production
-                                  );
-                                  await FirebaseAuth.instance.verifyPhoneNumber(
-                                    phoneNumber:
-                                        "+91${controller.numberController.value.text.trim()}",
-                                    timeout: const Duration(seconds: 60),
-                                    forceResendingToken: 4,
-                                    verificationCompleted:
-                                        (PhoneAuthCredential credential) async {
-                                      await controller.auth
-                                          .signInWithCredential(credential);
-                                    },
-                                    verificationFailed:
-                                        (FirebaseAuthException e) async {
-                                      controller.isLoading.value = false;
-
-                                      switch (e.code) {
-                                        case 'invalid-phone-number':
-                                          customToast(
-                                            context,
-                                            "The provided phone number is not valid.",
-                                            ToastType.warning,
-                                          );
-                                          break;
-                                        case 'too-many-requests':
-                                          customToast(
-                                            context,
-                                            "Too many requests. Please try again later.",
-                                            ToastType.warning,
-                                          );
-                                          break;
-                                        default:
-                                          customToast(
-                                            context,
-                                            "Error: ${e.message ?? "Something went wrong"}",
-                                            ToastType.error,
-                                          );
-                                      }
-                                    },
-                                    codeSent: (String verificationId,
-                                        int? resendToken) {
-                                      otpController.resendToken.value =
-                                          resendToken ?? 0;
-                                      otpController.verify.value =
-                                          verificationId;
-                                      print("Verify :$verificationId");
-                                      print(
-                                          "Verify :${otpController.verify.value}");
-                                      otpController.update();
-
-                                      customToast(
-                                        context,
-                                        "OTP Sent Successfully",
-                                        ToastType.success,
-                                      );
-
-                                      Get.offAllNamed(RouteConstants.otpScreen,
-                                          arguments: {
-                                            "no": controller
-                                                .numberController.value.text,
-                                          });
-                                    },
-                                    codeAutoRetrievalTimeout:
-                                        (String verificationId) {
-                                      customToast(
-                                        context,
-                                        "OTP auto-retrieval timeout.",
-                                        ToastType.warning,
-                                      );
-                                    },
-                                  );
+                                  Get.offAllNamed(RouteConstants.otpScreen,
+                                      arguments: {
+                                        "no": controller
+                                            .numberController.value.text,
+                                      });
+                                  // await FirebaseAuth.instance.setSettings(
+                                  //   appVerificationDisabledForTesting:
+                                  //       false, // Ensure this is false for production
+                                  // );
+                                  // await FirebaseAuth.instance.verifyPhoneNumber(
+                                  //   phoneNumber:
+                                  //       "+91${controller.numberController.value.text.trim()}",
+                                  //   timeout: const Duration(seconds: 60),
+                                  //   forceResendingToken: 4,
+                                  //   verificationCompleted:
+                                  //       (PhoneAuthCredential credential) async {
+                                  //     await controller.auth
+                                  //         .signInWithCredential(credential);
+                                  //   },
+                                  //   verificationFailed:
+                                  //       (FirebaseAuthException e) async {
+                                  //     controller.isLoading.value = false;
+                                  //
+                                  //     switch (e.code) {
+                                  //       case 'invalid-phone-number':
+                                  //         customToast(
+                                  //           context,
+                                  //           "The provided phone number is not valid.",
+                                  //           ToastType.warning,
+                                  //         );
+                                  //         break;
+                                  //       case 'too-many-requests':
+                                  //         customToast(
+                                  //           context,
+                                  //           "Too many requests. Please try again later.",
+                                  //           ToastType.warning,
+                                  //         );
+                                  //         break;
+                                  //       default:
+                                  //         customToast(
+                                  //           context,
+                                  //           "Error: ${e.message ?? "Something went wrong"}",
+                                  //           ToastType.error,
+                                  //         );
+                                  //     }
+                                  //   },
+                                  //   codeSent: (String verificationId,
+                                  //       int? resendToken) {
+                                  //     otpController.resendToken.value =
+                                  //         resendToken ?? 0;
+                                  //     otpController.verify.value =
+                                  //         verificationId;
+                                  //     print("Verify :$verificationId");
+                                  //     print(
+                                  //         "Verify :${otpController.verify.value}");
+                                  //     otpController.update();
+                                  //
+                                  //     customToast(
+                                  //       context,
+                                  //       "OTP Sent Successfully",
+                                  //       ToastType.success,
+                                  //     );
+                                  //
+                                  //     Get.offAllNamed(RouteConstants.otpScreen,
+                                  //         arguments: {
+                                  //           "no": controller
+                                  //               .numberController.value.text,
+                                  //         });
+                                  //   },
+                                  //   codeAutoRetrievalTimeout:
+                                  //       (String verificationId) {
+                                  //     customToast(
+                                  //       context,
+                                  //       "OTP auto-retrieval timeout.",
+                                  //       ToastType.warning,
+                                  //     );
+                                  //   },
+                                  // );
                                 } else {
                                   customToast(
                                     context,

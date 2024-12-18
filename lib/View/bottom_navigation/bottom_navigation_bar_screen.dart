@@ -18,30 +18,30 @@ import '../profile/profile_screen.dart';
 
 class AnimatedBottomNavBar extends GetView<BottomNavController> {
   final List<dynamic> icons = [
-    AppImages.homeIcon,
+    if (userType == 1) AppImages.homeIcon,
     AppImages.orderListIcon,
-    AppImages.cartIcon,
+    if (userType == 1) AppImages.cartIcon,
     AppImages.profileIcon,
   ];
 
   final List<dynamic> selectedIcons = [
-    AppImages.homeSeIcon,
+    if (userType == 1) AppImages.homeSeIcon,
     AppImages.orderListFillIcon,
-    AppImages.cartIcon,
+    if (userType == 1) AppImages.cartIcon,
     AppImages.profileFillIcon,
   ];
 
   final List<String> titles = [
-    'Home',
+    if (userType == 1) 'Home',
     'Order List',
-    'Cart',
+    if (userType == 1) 'Cart',
     'Profile',
   ];
 
   final List<Widget> screens = [
-    const HomeScreen(),
+    if (userType == 1) const HomeScreen(),
     const PastOrderScreen(),
-    const OrderListScreen(),
+    if (userType == 1) const OrderListScreen(),
     const ProfileScreen(),
   ];
 
@@ -52,6 +52,7 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
   @override
   Widget build(BuildContext context) {
     log(token);
+    print(userDetails.data?.user?.userTypeId);
     return Obx(
       () => Scaffold(
         key: controller.drawerKey,
@@ -87,7 +88,7 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
             },
           ),
           actions: [
-            if (controller.selectedIndex.value != 2)
+            if (controller.selectedIndex.value != 2 && userType == 1)
               Stack(
                 children: [
                   IconButton(
@@ -160,7 +161,7 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
               unselectedItemColor: Colors.grey,
               elevation: 0,
               onTap: controller.changeIndex,
-              items: List.generate(4, (index) {
+              items: List.generate(userType == 1 ? 4 : 2, (index) {
                 return BottomNavigationBarItem(
                   icon: Stack(
                     clipBehavior: Clip.none,

@@ -56,6 +56,7 @@ class OrderItemData {
   dynamic ordersSubProduct;
   int? ordersSubQuantity;
   String? ordersStatus;
+  String? fullName;
 
   OrderItemData({
     this.id,
@@ -70,6 +71,7 @@ class OrderItemData {
     this.ordersSubProduct,
     this.ordersSubQuantity,
     this.ordersStatus,
+    this.fullName,
   });
 
   OrderItemData copyWith({
@@ -85,6 +87,7 @@ class OrderItemData {
     dynamic ordersSubProduct,
     int? ordersSubQuantity,
     String? ordersStatus,
+    String? fullName,
   }) =>
       OrderItemData(
         id: id ?? this.id,
@@ -100,6 +103,7 @@ class OrderItemData {
         ordersSubProduct: ordersSubProduct ?? this.ordersSubProduct,
         ordersSubQuantity: ordersSubQuantity ?? this.ordersSubQuantity,
         ordersStatus: ordersStatus ?? this.ordersStatus,
+        fullName: fullName ?? this.fullName,
       );
 
   factory OrderItemData.fromJson(Map<String, dynamic> json) => OrderItemData(
@@ -117,6 +121,7 @@ class OrderItemData {
         ordersSubProduct: json["orders_sub_product"],
         ordersSubQuantity: json["orders_sub_quantity"],
         ordersStatus: json["orders_status"],
+        fullName: json["full_name"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -133,5 +138,6 @@ class OrderItemData {
         "orders_sub_product": ordersSubProduct,
         "orders_sub_quantity": ordersSubQuantity,
         "orders_status": ordersStatus,
+        "full_name": fullName,
       };
 }

@@ -52,7 +52,11 @@ dependencies:
   flutter_svg:
   firebase_core: ^2.17.0
   firebase_auth: ^4.7.0
-  another_telephony:
+  another_telephony: ^0.3.0
+  path_provider: ^2.1.2
+  share_plus:
+  printing:
+  image:
 
 dev_dependencies:
   flutter_test:
