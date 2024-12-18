@@ -154,9 +154,9 @@ class PastOrderScreen extends GetView<PastOrderController> {
                   itemBuilder: (context, index) {
                     return PastOrderItem(
                       onTap: () {
-                        /* Get.toNamed(RouteConstants.orderItemViewScreen);
-                        controller.getOrderDetail(
-                            controller.orderList[index].id?.toString() ?? "");*/
+                          Get.toNamed(RouteConstants.orderItemViewScreen);
+                          controller.getOrderDetail(
+                              controller.orderList[index].id?.toString() ?? "");
                       },
                       statusWidget: userType != 1 &&
                               controller.tapIndex.value != 0

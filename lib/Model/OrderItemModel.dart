@@ -112,6 +112,7 @@ class OrderSub {
   String? ordersSubRef;
   dynamic ordersSubProduct;
   String? ordersSubBrand;
+  String? productSubCategory;
   String? ordersSubThickness;
   String? ordersSubUnit;
   dynamic ordersSubSize1;
@@ -126,6 +127,7 @@ class OrderSub {
     this.ordersSubRef,
     this.ordersSubProduct,
     this.ordersSubBrand,
+    this.productSubCategory,
     this.ordersSubThickness,
     this.ordersSubUnit,
     this.ordersSubSize1,
@@ -149,6 +151,7 @@ class OrderSub {
     dynamic ordersSubRate,
     dynamic ordersSubQuantity,
     dynamic ordersSubAmount,
+    dynamic productSubCategory,
   }) =>
       OrderSub(
         id: id ?? this.id,
@@ -163,6 +166,7 @@ class OrderSub {
         ordersSubRate: ordersSubRate ?? this.ordersSubRate,
         ordersSubQuantity: ordersSubQuantity ?? this.ordersSubQuantity,
         ordersSubAmount: ordersSubAmount ?? this.ordersSubAmount,
+        productSubCategory: productSubCategory ?? this.productSubCategory,
       );
 
   factory OrderSub.fromJson(Map<String, dynamic> json) => OrderSub(
@@ -178,6 +182,7 @@ class OrderSub {
         ordersSubRate: json["orders_sub_rate"],
         ordersSubQuantity: json["orders_sub_quantity"],
         ordersSubAmount: json["orders_sub_amount"]?.toDouble(),
+        productSubCategory: json["product_sub_category"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -193,5 +198,6 @@ class OrderSub {
         "orders_sub_rate": ordersSubRate,
         "orders_sub_quantity": ordersSubQuantity,
         "orders_sub_amount": ordersSubAmount,
+        "product_sub_category": productSubCategory,
       };
 }

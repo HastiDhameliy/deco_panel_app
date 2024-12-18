@@ -353,15 +353,18 @@ class ApiService {
           customToast(context, jsonDecode(response.body)['msg'] ?? "",
               ToastType.success);
           loading.value = false;
+          return true;
         } else {
           customToast(
               context, jsonDecode(response.body)['msg'] ?? "", ToastType.error);
           loading.value = false;
+          return false;
         }
       } else {
         customToast(
             context, jsonDecode(response.body)['msg'] ?? "", ToastType.error);
         loading.value = false;
+        return false;
       }
     } catch (e) {
       loading.value = false;
@@ -369,7 +372,7 @@ class ApiService {
       log("createFeedbackApi error:-${e.toString()}");
     }
     getdata();
-    return loading.value;
+    return false;
   }
 
   Future<List<Offerbanner>> fetchOfferApi({

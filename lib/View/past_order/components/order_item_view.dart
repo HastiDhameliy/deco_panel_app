@@ -136,7 +136,12 @@ class OrderItemViewScreen extends GetView<PastOrderController> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            "Flush Door",
+                                            controller
+                                                .orderItemModel
+                                                .value
+                                                .orderSub![index]
+                                                .productSubCategory ??
+                                                "",
                                             textAlign: TextAlign.start,
                                             style: GoogleFonts.roboto(
                                               color: AppColors.buttonColor,

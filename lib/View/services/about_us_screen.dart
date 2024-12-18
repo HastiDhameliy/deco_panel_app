@@ -50,19 +50,16 @@ class AboutUsScreen extends GetView<FeedbackController> {
             horizontal: AppSize.displayWidth(context) * 0.04),
         child: Column(
           children: [
-            ClipPath(
-              clipper: PeanutClipper(),
-              child: Container(
-                height: AppSize.displayHeight(context) * 0.3,
-                // Height of the container
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(AppImages.panelImage),
-                    fit: BoxFit
-                        .fill, // Ensures the background covers the container
-                  ),
-                ),
-              ),
+            SizedBox(
+              height: 10,
+            ),
+            Image.asset(
+              AppImages.logo,
+              height: 200,
+              width: 200,
+            ),
+            SizedBox(
+              height: 20,
             ),
             /* Container(
               height: AppSize.displayHeight(context) * 0.14,

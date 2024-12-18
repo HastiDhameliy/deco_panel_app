@@ -131,10 +131,8 @@ class QuotationView extends GetView<PastOrderController> {
                           headers: const ["Product", "Qty", "Rate", "Amount"],
                           total: controller.quotationModel.value.quotationSub
                                   ?.fold(
-                                      0,
-                                      (previousValue, element) =>
-                                          previousValue +
-                                          (element.quotationSubAmount ?? 0))
+                                      0.0,
+                                      (previousValue, element) => previousValue + (double.parse(element.quotationSubAmount.toString())))
                                   .toString() ??
                               "0",
                         ),
@@ -194,10 +192,10 @@ class QuotationView extends GetView<PastOrderController> {
                           const ["Product", "Qty", "Rate", "Amount"],
                           controller.quotationModel.value.quotationSub
                                   ?.fold(
-                                      0,
+                                      0.0,
                                       (previousValue, element) =>
                                           previousValue +
-                                          (element.quotationSubAmount ?? 0))
+                                          (double.parse(element.quotationSubAmount.toString())))
                                   .toString() ??
                               "0",
                         );

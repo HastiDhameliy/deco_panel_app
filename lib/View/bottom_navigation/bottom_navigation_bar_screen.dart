@@ -15,12 +15,14 @@ import '../../Controller/past_order_controller.dart';
 import '../order_list/order_list_screen.dart';
 import '../past_order/past_order_screen.dart';
 import '../profile/profile_screen.dart';
+import '../quotation/current_quotation_screen.dart';
 
 class AnimatedBottomNavBar extends GetView<BottomNavController> {
   final List<dynamic> icons = [
     if (userType == 1) AppImages.homeIcon,
     AppImages.orderListIcon,
     if (userType == 1) AppImages.cartIcon,
+    if (userType != 1) AppImages.quotationIcon,
     AppImages.profileIcon,
   ];
 
@@ -28,6 +30,7 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
     if (userType == 1) AppImages.homeSeIcon,
     AppImages.orderListFillIcon,
     if (userType == 1) AppImages.cartIcon,
+    if (userType != 1) AppImages.quotationIcon,
     AppImages.profileFillIcon,
   ];
 
@@ -35,6 +38,7 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
     if (userType == 1) 'Home',
     'Order List',
     if (userType == 1) 'Cart',
+    if (userType != 1) 'Current Quotation',
     'Profile',
   ];
 
@@ -42,6 +46,7 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
     if (userType == 1) const HomeScreen(),
     const PastOrderScreen(),
     if (userType == 1) const OrderListScreen(),
+    if (userType != 1) const CurrentQuotationScreen(),
     const ProfileScreen(),
   ];
 
@@ -161,7 +166,7 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
               unselectedItemColor: Colors.grey,
               elevation: 0,
               onTap: controller.changeIndex,
-              items: List.generate(userType == 1 ? 4 : 2, (index) {
+              items: List.generate(userType == 1 ? 4 : 3, (index) {
                 return BottomNavigationBarItem(
                   icon: Stack(
                     clipBehavior: Clip.none,
@@ -173,7 +178,7 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
                             : icons[index],
                         isSelected: controller.selectedIndex.value == index,
                       ),
-                      index == 2
+                      index == 2 && userType == 1
                           ? Obx(
                               () => Positioned(
                                 right: -7,

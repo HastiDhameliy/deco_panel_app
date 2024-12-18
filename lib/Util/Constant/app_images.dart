@@ -8,6 +8,7 @@ class AppImages {
   static const String homeIcon = "assets/icon_home.png";
   static const String imageIcon = "assets/image_icon.png";
   static const String cartIcon = "assets/cart_icon.png";
+  static const String quotationIcon = "assets/quotation.png";
   static const String pastOrdersIcon = "assets/past_order_icon.png";
   static const String pastOrdersFillIcon = "assets/past_order_icon_fill.png";
   static const String orderListIcon = "assets/order_list_icon.png";

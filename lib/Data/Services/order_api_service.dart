@@ -144,7 +144,7 @@ class OrderApiService {
     required String orderref,
   }) async {
     QuotationModel quotationModel = QuotationModel();
-    try {
+
       loading.value = true;
       var url = Uri.parse(ApiConstants.getQuotationApiUrl);
       debugPrint(url.toString());
@@ -161,10 +161,7 @@ class OrderApiService {
       } else {
         loading.value = false;
       }
-    } catch (e) {
-      loading.value = false;
-      log("getQuotationApiUrl error:-${e.toString()}");
-    }
+
     getdata();
     return quotationModel;
   }

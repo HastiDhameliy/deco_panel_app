@@ -13,7 +13,7 @@ class QuotationModel {
   int? code;
   Quotation? quotation;
   List<QuotationSub>? quotationSub;
-  int? quotationSubSum;
+  dynamic quotationSubSum;
 
   QuotationModel({
     this.code,
@@ -26,7 +26,7 @@ class QuotationModel {
     int? code,
     Quotation? quotation,
     List<QuotationSub>? quotationSub,
-    int? quotationSubSum,
+    dynamic quotationSubSum,
   }) =>
       QuotationModel(
         code: code ?? this.code,
@@ -134,7 +134,7 @@ class QuotationSub {
   String? productCategoryImage;
   String? productSubCategoryImage;
   double? quotationSubRate;
-  int? quotationSubAmount;
+  dynamic quotationSubAmount;
 
   QuotationSub({
     this.id,
@@ -169,7 +169,7 @@ class QuotationSub {
     String? productCategoryImage,
     String? productSubCategoryImage,
     double? quotationSubRate,
-    int? quotationSubAmount,
+    dynamic quotationSubAmount,
   }) =>
       QuotationSub(
         id: id ?? this.id,

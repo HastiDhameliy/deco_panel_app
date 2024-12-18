@@ -508,7 +508,7 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                             ),
                             SizedBox(
                                 height: AppSize.displayHeight(context) * 0.02),
-                            controller.thicknessList.isEmpty
+                            controller.thicknessList.isNotEmpty
                                 ? _buildDropdownField<ThicknessData>(
                                     context,
                                     label: "Thickness",
