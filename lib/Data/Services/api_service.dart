@@ -44,7 +44,7 @@ class ApiService {
           //Get.offAllNamed(RouteConstants.otpScreen, arguments: {"no": phone});
           // customToast(context, jsonDecode(response.body)['msg'] ?? "",
           //     ToastType.success);
-          loading.value = false;
+          loading.value = true;
           return responsed;
         } else {
           loading.value = false;
@@ -167,7 +167,7 @@ class ApiService {
               ToastType.success);
           await SessionManager().saveAuthToken(userDetails.data?.token ?? "");
           BottomNavController con = Get.put(BottomNavController());
-          loading.value = true;
+          loading.value = false;
           getdata();
         } else {
           loading.value = false;

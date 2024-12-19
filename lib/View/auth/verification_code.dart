@@ -313,6 +313,8 @@ class _OtpScreenState extends State<OtpScreen> {
                           //     loading: otpController.isLoading);
                           // otpController.otpController.value.clear();
                           try {
+                            otpController.isLoading.value =
+                            true;
                             PhoneAuthCredential credential =
                                 PhoneAuthProvider.credential(
                               verificationId: otpController.verify.value,
