@@ -56,8 +56,11 @@ class OrderListScreen extends GetView<PastOrderController> {
                                 controller.cartList[index].id?.toString() ?? "",
                             cartQty: val.toString());
                       },
-                      networkImage:
-                          "${ApiConstants.imageBaseUrl}${controller.cartList[index].productCategoryImage?.toString() ?? ""}",
+                      networkImage: controller
+                                  .cartList[index].productCategoryImage !=
+                              null
+                          ? "${ApiConstants.imageBaseUrl}${controller.cartList[index].productCategoryImage?.toString() ?? ""}"
+                          : "",
                       title: controller.cartList[index].productsBrand
                               ?.toString() ??
                           "",
@@ -124,6 +127,7 @@ class OrderListScreen extends GetView<PastOrderController> {
                           controller.getOrder(
                               controller.tapIndex.value == 0 ? "1" : '2');
                           controller.getOrderList();
+                          Get.find<BottomNavController>().changeIndex(1);
                         },
                       ),
                     ),

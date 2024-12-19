@@ -154,9 +154,9 @@ class PastOrderScreen extends GetView<PastOrderController> {
                   itemBuilder: (context, index) {
                     return PastOrderItem(
                       onTap: () {
-                          Get.toNamed(RouteConstants.orderItemViewScreen);
-                          controller.getOrderDetail(
-                              controller.orderList[index].id?.toString() ?? "");
+                        Get.toNamed(RouteConstants.orderItemViewScreen);
+                        controller.getOrderDetail(
+                            controller.orderList[index].id?.toString() ?? "");
                       },
                       statusWidget: userType != 1 &&
                               controller.tapIndex.value != 0
@@ -201,8 +201,11 @@ class PastOrderScreen extends GetView<PastOrderController> {
                           royaltyPoint: controller.orderList[index].ordersNo
                                   ?.toString() ??
                               ""),
-                      networkImage:
-                          "${ApiConstants.imageBaseUrl}${controller.orderList[index].productCategoryImage?.toString() ?? ""}",
+                      networkImage: controller
+                                  .orderList[index].productCategoryImage !=
+                              null
+                          ? "${ApiConstants.imageBaseUrl}${controller.orderList[index].productCategoryImage?.toString() ?? ""}"
+                          : "",
                       title:
                           controller.orderList[index].ordersRef?.toString() ??
                               "",

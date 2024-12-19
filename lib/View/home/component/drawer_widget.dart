@@ -10,6 +10,7 @@ import '../../../RoutesManagment/routes.dart';
 import '../../../Util/Constant/app_colors.dart';
 import '../../../Util/Constant/app_images.dart';
 import '../../../Util/Constant/app_size.dart';
+import '../../../widget/common_button.dart';
 
 class DrawerWidget extends StatefulWidget {
   const DrawerWidget({super.key});
@@ -139,10 +140,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       Get.toNamed(RouteConstants.feedBackScreen);
                       break;
                     case 6:
-                      final SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      prefs.clear();
-                      Get.offAllNamed(RouteConstants.loginScreen);
+                      showLogoutDialog(context);
                       break;
                     default:
                   }
@@ -166,10 +164,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       Get.toNamed(RouteConstants.feedBackScreen);
                       break;
                     case 5:
-                      final SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      prefs.clear();
-                      Get.offAllNamed(RouteConstants.loginScreen);
+                      showLogoutDialog(context);
                       break;
                     default:
                   }
@@ -180,6 +175,70 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           )
         ],
       ),
+    );
+  }
+
+  void showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.white,
+          title: Text(
+            "Log Out",
+            style: GoogleFonts.ptSans(
+              fontSize: Get.height / 45,
+              fontWeight: FontWeight.w700,
+              color: AppColors.color333,
+            ),
+          ),
+          content: Text(
+            "Are you sure you want to log out?",
+            style: GoogleFonts.ptSans(
+              fontSize: Get.height / 55,
+              fontWeight: FontWeight.w400,
+              color: AppColors.color333,
+            ),
+          ),
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  child: CommonButton(
+                    padding: EdgeInsets.zero,
+                    height: AppSize.displayHeight(context) * 0.05,
+                    boxShadowColor: Colors.transparent,
+                    enabledColor: AppColors.whiteColor,
+                    textStyle: GoogleFonts.poppins(
+                      fontSize: Get.height / 65,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.colorB5B,
+                    ),
+                    text: "Cancel",
+                    onPressed: () {
+                      Get.back();
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: CommonButton(
+                    text: "Log Out",
+                    padding: EdgeInsets.zero,
+                    height: AppSize.displayHeight(context) * 0.05,
+                    onPressed: () async {
+                      final SharedPreferences prefs =
+                          await SharedPreferences.getInstance();
+                      prefs.clear();
+                      Get.offAllNamed(RouteConstants.loginScreen);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 }

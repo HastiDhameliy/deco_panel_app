@@ -162,8 +162,6 @@ class LoginScreen extends GetView<LoginController> {
                                     },
                                     verificationFailed:
                                         (FirebaseAuthException e) async {
-                                      controller.isLoading.value = false;
-
                                       switch (e.code) {
                                         case 'invalid-phone-number':
                                           customToast(
@@ -186,6 +184,8 @@ class LoginScreen extends GetView<LoginController> {
                                             ToastType.error,
                                           );
                                       }
+                                      controller.isLoading.value =
+                                          false; // Stop the loader here
                                     },
                                     codeSent: (String verificationId,
                                         int? resendToken) {
@@ -209,6 +209,7 @@ class LoginScreen extends GetView<LoginController> {
                                             "no": controller
                                                 .numberController.value.text,
                                           });
+                                      controller.isLoading.value = false;
                                     },
                                     codeAutoRetrievalTimeout:
                                         (String verificationId) {
@@ -226,12 +227,14 @@ class LoginScreen extends GetView<LoginController> {
                                     ToastType.error,
                                   );
                                 }
+                                controller.isLoading.value = false;
                               } catch (error) {
                                 customToast(
                                   context,
                                   "Error: ${error.toString()}",
                                   ToastType.error,
                                 );
+                                controller.isLoading.value = false;
                               } finally {
                                 controller.isLoading.value = false;
                               }

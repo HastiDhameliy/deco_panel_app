@@ -59,156 +59,166 @@ class AnimatedBottomNavBar extends GetView<BottomNavController> {
     log(token);
     print(userDetails.data?.user?.userTypeId);
     return Obx(
-      () => Scaffold(
-        key: controller.drawerKey,
-        // Assign the scaffold key to the Scaffold widget
-        drawerEnableOpenDragGesture: true,
-        // Set to true to allow swipe gestures
-        drawer: const DrawerWidget(),
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0.2,
-          surfaceTintColor: Colors.transparent,
-          shadowColor: Colors.black.withOpacity(0.4),
-          flexibleSpace: Container(
-              decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: controller.selectedIndex.value != 1
-                    ? Colors.black.withOpacity(0.1)
-                    : Colors.transparent,
-                // Light shadow color
-                blurRadius: 10.0,
-                // Soften the shadow
-                offset: const Offset(0, 4), // Shadow appears below the AppBar
-              ),
-            ],
-          )),
-          leading: IconButton(
-            icon: const Icon(Icons.menu_rounded),
-            onPressed: () {
-              controller.drawerKey.currentState
-                  ?.openDrawer(); // Use openDrawer to open the left drawer
-            },
-          ),
-          actions: [
-            if (controller.selectedIndex.value != 2 && userType == 1)
-              Stack(
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      controller.changeIndex(2);
-                      // Your onPressed action
-                    },
-                    icon: Image.asset(
-                      AppImages.cartIcon,
-                      height: AppSize.displayHeight(context) * 0.025,
+      () => WillPopScope(
+        onWillPop: () async {
+          if (!controller.canCloseApp()) {
+            Get.snackbar('Hold On', 'Press back again to exit',
+                snackPosition: SnackPosition.BOTTOM);
+            return false;
+          }
+          return true;
+        },
+        child: Scaffold(
+          key: controller.drawerKey,
+          // Assign the scaffold key to the Scaffold widget
+          drawerEnableOpenDragGesture: true,
+          // Set to true to allow swipe gestures
+          drawer: const DrawerWidget(),
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0.2,
+            surfaceTintColor: Colors.transparent,
+            shadowColor: Colors.black.withOpacity(0.4),
+            flexibleSpace: Container(
+                decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: controller.selectedIndex.value != 1
+                      ? Colors.black.withOpacity(0.1)
+                      : Colors.transparent,
+                  // Light shadow color
+                  blurRadius: 10.0,
+                  // Soften the shadow
+                  offset: const Offset(0, 4), // Shadow appears below the AppBar
+                ),
+              ],
+            )),
+            leading: IconButton(
+              icon: const Icon(Icons.menu_rounded),
+              onPressed: () {
+                controller.drawerKey.currentState
+                    ?.openDrawer(); // Use openDrawer to open the left drawer
+              },
+            ),
+            actions: [
+              if (controller.selectedIndex.value != 2 && userType == 1)
+                Stack(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        controller.changeIndex(2);
+                        // Your onPressed action
+                      },
+                      icon: Image.asset(
+                        AppImages.cartIcon,
+                        height: AppSize.displayHeight(context) * 0.025,
+                      ),
                     ),
-                  ),
-                  Obx(
-                    () => Positioned(
-                      right: 0,
-                      top: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: const BoxDecoration(
-                          color: AppColors.buttonColor,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Text(
-                          '${Get.find<PastOrderController>().cartList.length}', // Observed count
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
+                    Obx(
+                      () => Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: const BoxDecoration(
+                            color: AppColors.buttonColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            '${Get.find<PastOrderController>().cartList.length}', // Observed count
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ).paddingOnly(right: AppSize.displayWidth(context) * 0.02),
-          ],
-          title: Text(
-            controller.selectedIndex.value == 0
-                ? "Deco Panel"
-                : titles[controller.selectedIndex.value],
-            style: GoogleFonts.roboto(
-              color: AppColors.color333,
-              fontSize: Get.height / 35,
-              fontWeight: FontWeight.w700,
+                  ],
+                ).paddingOnly(right: AppSize.displayWidth(context) * 0.02),
+            ],
+            title: Text(
+              controller.selectedIndex.value == 0
+                  ? "Deco Panel"
+                  : titles[controller.selectedIndex.value],
+              style: GoogleFonts.roboto(
+                color: AppColors.color333,
+                fontSize: Get.height / 35,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
-        ),
-        body: Obx(() => screens[controller.selectedIndex.value]),
-        bottomNavigationBar: Obx(
-          () => Container(
-            padding: EdgeInsets.symmetric(
-                vertical: AppSize.displayHeight(context) * 0.005),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  // Light shadow color
-                  blurRadius: 10.0,
-                  // Soften the shadow
-                  offset:
-                      const Offset(0, -4), // Shadow appears above the button
-                ),
-              ],
-            ),
-            child: BottomNavigationBar(
-              currentIndex: controller.selectedIndex.value,
-              type: BottomNavigationBarType.fixed,
-              selectedItemColor: AppColors.buttonColor,
-              unselectedItemColor: Colors.grey,
-              elevation: 0,
-              onTap: controller.changeIndex,
-              items: List.generate(userType == 1 ? 4 : 3, (index) {
-                return BottomNavigationBarItem(
-                  icon: Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.center,
-                    children: [
-                      AnimatedIconOrImageWidget(
-                        iconData: controller.selectedIndex.value == index
-                            ? selectedIcons[index]
-                            : icons[index],
-                        isSelected: controller.selectedIndex.value == index,
-                      ),
-                      index == 2 && userType == 1
-                          ? Obx(
-                              () => Positioned(
-                                right: -7,
-                                top: -9,
-                                child: Container(
-                                  padding: const EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    color: controller.selectedIndex.value !=
-                                            index
-                                        ? AppColors.color333.withOpacity(0.6)
-                                        : AppColors.buttonColor,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Text(
-                                    '${Get.find<PastOrderController>().cartList.length}', // Observed count
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
+          body: Obx(() => screens[controller.selectedIndex.value]),
+          bottomNavigationBar: Obx(
+            () => Container(
+              padding: EdgeInsets.symmetric(
+                  vertical: AppSize.displayHeight(context) * 0.005),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    // Light shadow color
+                    blurRadius: 10.0,
+                    // Soften the shadow
+                    offset:
+                        const Offset(0, -4), // Shadow appears above the button
+                  ),
+                ],
+              ),
+              child: BottomNavigationBar(
+                currentIndex: controller.selectedIndex.value,
+                type: BottomNavigationBarType.fixed,
+                selectedItemColor: AppColors.buttonColor,
+                unselectedItemColor: Colors.grey,
+                elevation: 0,
+                onTap: controller.changeIndex,
+                items: List.generate(userType == 1 ? 4 : 3, (index) {
+                  return BottomNavigationBarItem(
+                    icon: Stack(
+                      clipBehavior: Clip.none,
+                      alignment: Alignment.center,
+                      children: [
+                        AnimatedIconOrImageWidget(
+                          iconData: controller.selectedIndex.value == index
+                              ? selectedIcons[index]
+                              : icons[index],
+                          isSelected: controller.selectedIndex.value == index,
+                        ),
+                        index == 2 && userType == 1
+                            ? Obx(
+                                () => Positioned(
+                                  right: -7,
+                                  top: -9,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      color: controller.selectedIndex.value !=
+                                              index
+                                          ? AppColors.color333.withOpacity(0.6)
+                                          : AppColors.buttonColor,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Text(
+                                      '${Get.find<PastOrderController>().cartList.length}', // Observed count
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            )
-                          : SizedBox(),
-                    ],
-                  ),
-                  label: titles[index],
-                );
-              }),
+                              )
+                            : SizedBox(),
+                      ],
+                    ),
+                    label: titles[index],
+                  );
+                }),
+              ),
             ),
           ),
         ),

@@ -37,7 +37,10 @@ class CommonNetworkImage extends StatelessWidget {
 
       imageErrorBuilder: (context, error, stackTrace) {
         // Handle error with fallback image
-        return const SizedBox();
+        return const SizedBox(
+          height: 0,
+          width: 0,
+        );
       },
     );
   }

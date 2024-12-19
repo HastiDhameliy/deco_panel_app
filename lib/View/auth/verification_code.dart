@@ -314,23 +314,27 @@ class _OtpScreenState extends State<OtpScreen> {
                           // otpController.otpController.value.clear();
                           try {
                             PhoneAuthCredential credential =
-                            PhoneAuthProvider.credential(
+                                PhoneAuthProvider.credential(
                               verificationId: otpController.verify.value,
                               smsCode: otpController.otpController.value.text,
                             );
                             await FirebaseAuth.instance
                                 .signInWithCredential(credential);
                             // controller.postCheckMobileApi({"mobile": mobileNumberController.mobileNumberController.value.text.trim()});
-                            ApiService().loginApi(
+                            await ApiService().loginApi(
                                 phone: Get.arguments != null &&
-                                    Get.arguments["no"] != null
+                                        Get.arguments["no"] != null
                                     ? Get.arguments["no"]
                                     : "",
                                 context: context,
                                 loading: otpController.isLoading);
+                            otpController.isLoading.value =
+                                false; // Stop the loader in case of an error
                           } on FirebaseAuthException catch (error) {
-                            if (error.code ==
-                                'invalid-verification-code') {
+                            otpController.isLoading.value =
+                                false; // Stop the loader in case of an error
+
+                            if (error.code == 'invalid-verification-code') {
                               customToast(
                                 context,
                                 "Invalid OTP",
@@ -343,6 +347,8 @@ class _OtpScreenState extends State<OtpScreen> {
                                 ToastType.error,
                               );
                             }
+                            otpController.isLoading.value =
+                                false; // Stop the loader in case of an error
                           } catch (e) {
                             customToast(
                               context,
@@ -350,6 +356,8 @@ class _OtpScreenState extends State<OtpScreen> {
                               ToastType.error,
                             );
                             print("error >>>>>>>>>>>>> $e");
+                            otpController.isLoading.value =
+                                false; // Ensure the loader is stopped
                           }
                         },
                       ),

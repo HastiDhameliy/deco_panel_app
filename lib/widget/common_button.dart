@@ -1,52 +1,66 @@
-import 'package:deco_flutter_app/Util/Constant/app_size.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import '../Util/Constant/app_colors.dart';
 
 class CommonButton extends StatelessWidget {
-  final String text;
+  final String? text;
+  final Widget? child;
   final VoidCallback? onPressed;
   final bool isEnabled;
-  final bool showRippleEffect; // Ripple effect control
-  final bool isLoading; // Flag to control loading state
-  final double? width; // Optional width for flexibility
-  final double? height; // Optional height for flexibility
+  final bool showRippleEffect;
+  final bool isLoading;
+  final double? width;
+  final double? height;
   final Color enabledColor;
   final Color? disabledColor;
   final Color? boxShadowColor;
   final TextStyle? textStyle;
   final EdgeInsetsGeometry? padding;
+  final BorderRadius? borderRadius;
+  final List<BoxShadow>? boxShadow;
 
   const CommonButton({
     super.key,
-    required this.text,
-    required this.onPressed,
+    this.text,
+    this.child,
+    this.onPressed,
     this.isEnabled = true,
-    this.showRippleEffect = false, // Default to no ripple
-    this.isLoading = false, // Default to not loading
+    this.showRippleEffect = false,
+    this.isLoading = false,
     this.width,
     this.height,
     this.enabledColor = AppColors.colorF45,
     this.disabledColor,
     this.textStyle,
     this.padding,
+    this.borderRadius,
+    this.boxShadow,
     this.boxShadowColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width,
-      height: height,
+      width: width ?? MediaQuery.of(context).size.width,
+      height: height ?? 50,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: borderRadius ?? BorderRadius.circular(8.0),
+        boxShadow: boxShadow ??
+            [
+              BoxShadow(
+                color: boxShadowColor ?? Colors.black.withOpacity(0.2),
+                blurRadius: 6.0,
+                offset: const Offset(0, 4.0),
+              ),
+            ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: borderRadius ?? BorderRadius.circular(8.0),
           splashColor: showRippleEffect && isEnabled
               ? Colors.white.withOpacity(0.2)
               : Colors.transparent,
@@ -57,32 +71,27 @@ class CommonButton extends StatelessWidget {
               color: isEnabled
                   ? enabledColor
                   : disabledColor ?? AppColors.buttonSplashColor,
-              borderRadius: BorderRadius.circular(8.0),
-              boxShadow: [
-                BoxShadow(
-                  color: boxShadowColor ?? Colors.black.withOpacity(0.2),
-                  blurRadius: 6.0,
-                  offset: const Offset(0, 6.0),
-                ),
-              ],
+              borderRadius: borderRadius ?? BorderRadius.circular(8.0),
             ),
             padding: padding ??
-                const EdgeInsets.symmetric(
-                    vertical: defaultPadding, horizontal: defaultPadding * 2),
+                const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
             child: Center(
               child: isLoading
-                  ? const CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ? LoadingAnimationWidget.staggeredDotsWave(
+                      color: Colors.white,
+                      size: height != null ? height! * 0.4 : 20, // Scaled size
                     )
-                  : Text(
-                      text,
-                      style: textStyle ??
-                          GoogleFonts.poppins(
-                            fontSize: Get.height / 65,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.whiteColor,
-                          ),
-                    ),
+                  : child ??
+                      Text(
+                        text ?? "",
+                        style: textStyle ??
+                            GoogleFonts.poppins(
+                              fontSize: Get.height / 60,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                        textAlign: TextAlign.center,
+                      ),
             ),
           ),
         ),

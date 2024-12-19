@@ -44,7 +44,6 @@ class PastOrderController extends GetxController
   }
 
   void getOrderList() async {
-    cartList.clear();
     cartList.value =
         await OrderApiService().fetchCartListApiUrl(loading: cartLoading);
   }

@@ -1,25 +1,20 @@
-import 'package:deco_flutter_app/Util/Constant/app_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 
 enum ToastType { success, error, warning }
 
 void customToast(BuildContext context, String msg, ToastType type) {
-  // Determine properties based on the ToastType
-  Color backgroundColor;
+  // Determine the icon based on the ToastType
   Icon icon;
 
   switch (type) {
     case ToastType.success:
-      backgroundColor = Colors.white; // Green for success
-      icon = const Icon(Icons.check_circle, color: Colors.black, size: 28);
+      icon = const Icon(Icons.check_circle, color: Colors.white, size: 28);
       break;
     case ToastType.error:
-      backgroundColor = Colors.red.withOpacity(0.9); // Red for error
       icon = const Icon(Icons.error, color: Colors.white, size: 28);
       break;
     case ToastType.warning:
-      backgroundColor = Colors.amber.withOpacity(0.9); // Amber for warning
       icon = const Icon(Icons.warning, color: Colors.white, size: 28);
       break;
   }
@@ -27,18 +22,11 @@ void customToast(BuildContext context, String msg, ToastType type) {
   showToastWidget(
     Container(
       margin: const EdgeInsets.only(bottom: 50),
-      padding: const EdgeInsets.symmetric(
-          horizontal: 24, vertical: defaultPadding / 2),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(defaultRadius / 2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          ),
-        ],
+        color: Colors.black.withOpacity(0.7),
+        // Semi-transparent black background
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -48,12 +36,11 @@ void customToast(BuildContext context, String msg, ToastType type) {
           Flexible(
             child: Text(
               msg,
-              style: TextStyle(
-                color: type == ToastType.success ? Colors.black : Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+              style: const TextStyle(
+                color: Colors.white, // White text
+                fontSize: 16.0,
               ),
-              maxLines: 3,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -61,16 +48,15 @@ void customToast(BuildContext context, String msg, ToastType type) {
       ),
     ),
     context: context,
-    duration: const Duration(seconds: 4),
-    // Increased duration for better visibility
-    animation: StyledToastAnimation.slideFromBottomFade,
-    // A stronger animation
-    reverseAnimation: StyledToastAnimation.slideToBottomFade,
+    duration: const Duration(seconds: 2),
+    // Short duration for simple toasts
+    animation: StyledToastAnimation.fade,
+    // Simple fade animation
+    reverseAnimation: StyledToastAnimation.fade,
     position: StyledToastPosition.bottom,
-    // Bottom position for better UX
-    animDuration: const Duration(milliseconds: 500),
-    // Longer animation duration
-    curve: Curves.fastOutSlowIn,
+    // Toast appears at the bottom
+    animDuration: const Duration(milliseconds: 300),
+    curve: Curves.easeInOut,
     reverseCurve: Curves.easeOut,
   );
 }

@@ -124,7 +124,7 @@ class ApiService {
 
         if (responseJson['code'] == 200) {
           // customToast(context, responseJson['msg'] ?? "", ToastType.success);
-          loading.value = false;
+          loading.value = true;
           return responseJson;
         } else {
           // customToast(context, responseJson['msg'] ?? "", ToastType.error);
@@ -167,7 +167,7 @@ class ApiService {
               ToastType.success);
           await SessionManager().saveAuthToken(userDetails.data?.token ?? "");
           BottomNavController con = Get.put(BottomNavController());
-          loading.value = false;
+          loading.value = true;
           getdata();
         } else {
           loading.value = false;

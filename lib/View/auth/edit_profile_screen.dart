@@ -242,7 +242,6 @@ class EditProfileScreen extends GetView<LoginController> {
                                 verificationFailed:
                                     (FirebaseAuthException e) async {
                                   controller.isLoading.value = false;
-
                                   switch (e.code) {
                                     case 'invalid-phone-number':
                                       customToast(
@@ -282,6 +281,8 @@ class EditProfileScreen extends GetView<LoginController> {
                                       arguments: {
                                         "no": controller.mobileCon.value.text,
                                       });
+                                  controller.isLoading.value =
+                                      false; // Stop the loader
                                 },
                                 codeAutoRetrievalTimeout:
                                     (String verificationId) {
@@ -290,6 +291,8 @@ class EditProfileScreen extends GetView<LoginController> {
                                     "OTP auto-retrieval timeout.",
                                     ToastType.warning,
                                   );
+                                  controller.isLoading.value =
+                                      false; // Stop the loader
                                 },
                               );
                             } else {
@@ -298,6 +301,8 @@ class EditProfileScreen extends GetView<LoginController> {
                                 "Failed to send the OTP. Please try again.",
                                 ToastType.error,
                               );
+                              controller.isLoading.value =
+                                  false; // Stop the loader
                             }
                           },
                         );

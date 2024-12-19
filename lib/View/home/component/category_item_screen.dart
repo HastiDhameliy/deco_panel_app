@@ -174,10 +174,50 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                             image:
                                 "${ApiConstants.imageBaseUrl}${controller.subCategoryModel.value.data?[index].productSubCategoryImage ?? ""}",
                             onTap: () async {
+                              // Show loading indicator before fetching data
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                // Prevent dismissing the dialog by tapping outside
+                                builder: (BuildContext context) {
+                                  return Dialog(
+                                    backgroundColor: Colors.white,
+                                    surfaceTintColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Container(
+                                      height:
+                                          AppSize.displayHeight(context) * 0.1,
+                                      width:
+                                          AppSize.displayHeight(context) * 0.1,
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: defaultPadding,
+                                          vertical: defaultPadding),
+                                      decoration: const BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(defaultRadius / 2),
+                                        ),
+                                      ),
+                                      child: const Center(
+                                        child: CircularProgressIndicator(
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.grey),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+
                               // Fetch product data
                               debugPrint(
                                   controller.categoryData.value.id.toString());
-                              controller.getProductData(
+
+                              // Start fetching the data
+                              await controller.getProductData(
                                 context: context,
                                 id: controller.categoryData.value.id
                                         ?.toString() ??
@@ -187,20 +227,27 @@ class CategoryItemScreen extends GetView<BottomNavController> {
                                         ?.toString() ??
                                     "",
                               );
-                              _showDialog(context, index);
-                              // Wait for data to be fetched
-                              await Future.delayed(const Duration(
-                                  seconds: 1)); // Adjust this delay if needed
 
-                              // Check if all three lists are populated
+                              // Check if all lists are populated
                               if (controller.brandList.isNotEmpty &&
                                   controller.thicknessList.isNotEmpty &&
                                   controller.sizeList.isNotEmpty &&
                                   controller.productItemList.isNotEmpty) {
-                                // If the lists are populated, show the dialog
-                              } else {
+                                // Dismiss the loading dialog
                                 Get.back();
-                                // If any list is empty, show a toast or snackbar
+
+                                // Show the dialog if all lists have data
+                                _showDialog(context, index);
+                              } else {
+                                // Dismiss the loading dialog
+                                Get.back();
+
+                                // If any list is empty, show a toast and navigate back
+                                customToast(
+                                    context,
+                                    'Failed to fetch product data',
+                                    ToastType.warning);
+                                Get.back();
                               }
                             },
                           );

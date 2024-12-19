@@ -54,6 +54,19 @@ class BottomNavController extends GetxController
     update();
   }
 
+  DateTime? lastBackPressTime;
+
+  bool canCloseApp() {
+    final currentTime = DateTime.now();
+    final backPressInterval = Duration(seconds: 2);
+    if (lastBackPressTime == null ||
+        currentTime.difference(lastBackPressTime!) > backPressInterval) {
+      lastBackPressTime = currentTime;
+      return false;
+    }
+    return true;
+  }
+
   void changeIndex(int index) {
     selectedIndex.value = index;
     if (userType == 1) {
@@ -72,12 +85,12 @@ class BottomNavController extends GetxController
     } else if (userType == 2) {
       switch (index) {
         case 0:
-          if (Get.find<PastOrderController>().tapIndex.value == 0) {
-            Get.find<PastOrderController>().getOrder("1");
-          } else {
-            Get.find<PastOrderController>().getOrder("2");
-          }
+          Get.find<PastOrderController>().tapIndex.value = 0;
+          Get.find<PastOrderController>().getOrder("1");
         case 1:
+          Get.find<PastOrderController>().tapIndex.value = 2;
+          Get.find<PastOrderController>().getOrder("2");
+        case 2:
           Get.find<ProfileController>().getProfileData();
       }
     }
@@ -105,7 +118,7 @@ class BottomNavController extends GetxController
         loading: isLoadingSubCategory, productCtgId: id);
   }
 
-  void getProductData({
+  Future<void> getProductData({
     required String id,
     required String subId,
     required BuildContext context,

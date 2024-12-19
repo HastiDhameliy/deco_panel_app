@@ -18,109 +18,113 @@ class CurrentQuotationScreen extends GetView<PastOrderController> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(
-            () => controller.createOrderLoading.value
+        () => controller.createOrderLoading.value
             ? Center(
-          child: Container(
-            height: AppSize.displayHeight(context) * 0.1,
-            width: AppSize.displayHeight(context) * 0.1,
-            margin: const EdgeInsets.symmetric(
-                horizontal: defaultPadding, vertical: defaultPadding),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(
-                Radius.circular(defaultRadius / 2),
-              ),
-            ),
-            child: const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
-              ),
-            ),
-          ),
-        )
+                child: Container(
+                  height: AppSize.displayHeight(context) * 0.1,
+                  width: AppSize.displayHeight(context) * 0.1,
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: defaultPadding, vertical: defaultPadding),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(defaultRadius / 2),
+                    ),
+                  ),
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
+                    ),
+                  ),
+                ),
+              )
             : controller.orderList.isNotEmpty
-            ? ListView.separated(
-            padding: const EdgeInsets.symmetric(
-                horizontal: defaultPadding, vertical: defaultPadding),
-            itemBuilder: (context, index) {
-              return PastOrderItem(
-                onTap: () {
-                  Get.toNamed(RouteConstants.orderItemViewScreen);
-                  controller.getOrderDetail(
-                      controller.orderList[index].id?.toString() ?? "");
-                },
-                statusWidget: userType != 1 &&
-                    controller.tapIndex.value != 0
-                    ? InkWell(
-                  onTap: () {
-                    Get.toNamed(RouteConstants.quotationView);
-                    controller.getQuotationDetail(controller
-                        .orderList[index].ordersRef
-                        ?.toString() ??
-                        "");
-                  },
-                  child: Row(
+                ? ListView.separated(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: defaultPadding, vertical: defaultPadding),
+                    itemBuilder: (context, index) {
+                      return PastOrderItem(
+                        onTap: () {
+                          Get.toNamed(RouteConstants.orderItemViewScreen);
+                          controller.getOrderDetail(
+                              controller.orderList[index].id?.toString() ?? "");
+                        },
+                        statusWidget: userType != 1 &&
+                                controller.tapIndex.value != 0
+                            ? InkWell(
+                                onTap: () {
+                                  Get.toNamed(RouteConstants.quotationView);
+                                  controller.getQuotationDetail(controller
+                                          .orderList[index].ordersRef
+                                          ?.toString() ??
+                                      "");
+                                },
+                                child: Row(
+                                  children: [
+                                    Image.asset(
+                                      AppImages.receiptIcon,
+                                      height: AppSize.displayHeight(context) *
+                                          0.022,
+                                    ).paddingOnly(
+                                        right: AppSize.displayWidth(context) *
+                                            0.01),
+                                    Icon(
+                                      Icons.arrow_forward_ios_outlined,
+                                      color: AppColors.color42B,
+                                      size:
+                                          AppSize.displayHeight(context) * 0.02,
+                                    )
+                                  ],
+                                ),
+                              )
+                            : statusWidget(
+                                context: context,
+                                statusTitle:
+                                    controller.orderList[index].ordersStatus ??
+                                        ""),
+                        orderWidget: pastOrderWidget(
+                            context: context,
+                            orderDate: controller.orderList[index].ordersDate
+                                    ?.toIso8601String() ??
+                                "",
+                            orderNumber: controller.orderList[index].ordersNo
+                                    ?.toString() ??
+                                "",
+                            royaltyPoint: controller.orderList[index].ordersNo
+                                    ?.toString() ??
+                                ""),
+                        networkImage: controller
+                                    .orderList[index].productCategoryImage !=
+                                null
+                            ? "${ApiConstants.imageBaseUrl}${controller.orderList[index].productCategoryImage?.toString() ?? ""}"
+                            : "",
+                        title:
+                            controller.orderList[index].ordersRef?.toString() ??
+                                "",
+                        subTitle: controller.orderList[index].productCategory,
+                      );
+                    },
+                    separatorBuilder: (context, index) => const SizedBox(
+                          height: 10,
+                        ),
+                    itemCount: controller.orderList.length)
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset(
-                        AppImages.receiptIcon,
-                        height:
-                        AppSize.displayHeight(context) * 0.022,
-                      ).paddingOnly(
-                          right:
-                          AppSize.displayWidth(context) * 0.01),
-                      Icon(
-                        Icons.arrow_forward_ios_outlined,
-                        color: AppColors.color42B,
-                        size: AppSize.displayHeight(context) * 0.02,
-                      )
+                      Center(
+                        child: Text(
+                          "No Data Available",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.ptSans(
+                            color: AppColors.color333,
+                            fontSize: Get.height / 45,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                )
-                    : statusWidget(
-                    context: context,
-                    statusTitle:
-                    controller.orderList[index].ordersStatus ??
-                        ""),
-                orderWidget: pastOrderWidget(
-                    context: context,
-                    orderDate: controller.orderList[index].ordersDate
-                        ?.toIso8601String() ??
-                        "",
-                    orderNumber: controller.orderList[index].ordersNo
-                        ?.toString() ??
-                        "",
-                    royaltyPoint: controller.orderList[index].ordersNo
-                        ?.toString() ??
-                        ""),
-                networkImage:
-                "${ApiConstants.imageBaseUrl}${controller.orderList[index].productCategoryImage?.toString() ?? ""}",
-                title:
-                controller.orderList[index].ordersRef?.toString() ??
-                    "",
-                subTitle: controller.orderList[index].productCategory,
-              );
-            },
-            separatorBuilder: (context, index) => const SizedBox(
-              height: 10,
-            ),
-            itemCount: controller.orderList.length)
-            : Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Center(
-              child: Text(
-                "No Data Available",
-                textAlign: TextAlign.center,
-                style: GoogleFonts.ptSans(
-                  color: AppColors.color333,
-                  fontSize: Get.height / 45,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

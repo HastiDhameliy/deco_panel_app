@@ -99,20 +99,22 @@ class PastOrderItem extends GetView<PastOrderController> {
                       ),
                     ),
                   ),*/
-               /* SizedBox(
-                  height: AppSize.displayHeight(context) * 0.11,
-                  width: AppSize.displayHeight(context) * 0.11,
-                  child: CommonNetworkImage(
-                    imageUrl: networkImage ?? "",
-                    placeholder: 'assets/images/loading_placeholder.png',
-                    errorPlaceholder: 'assets/images/error_image.png',
-                    fit: BoxFit.fill,
-                    fadeInDuration: const Duration(milliseconds: 500),
+                if (networkImage != "")
+                  SizedBox(
+                    height: AppSize.displayHeight(context) * 0.11,
+                    width: AppSize.displayHeight(context) * 0.11,
+                    child: CommonNetworkImage(
+                      imageUrl: networkImage ?? "",
+                      placeholder: 'assets/images/loading_placeholder.png',
+                      errorPlaceholder: 'assets/images/error_image.png',
+                      fit: BoxFit.fill,
+                      fadeInDuration: const Duration(milliseconds: 500),
+                    ),
                   ),
-                ),
-                SizedBox(
-                  width: AppSize.displayWidth(context) * 0.035,
-                ),*/
+                if (networkImage != "")
+                  SizedBox(
+                    width: AppSize.displayWidth(context) * 0.035,
+                  ),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

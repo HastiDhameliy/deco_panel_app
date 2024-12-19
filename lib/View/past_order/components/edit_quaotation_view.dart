@@ -150,6 +150,9 @@ class EditQuotationView extends GetView<PastOrderController> {
             Obx(
               () => CommonButton(
                 text: "Update Quotation",
+                height: AppSize.displayHeight(context) * 0.065,
+                width: AppSize.displayWidth(context) * 0.4,
+                padding: EdgeInsets.zero,
                 isEnabled:
                     controller.quotationModel.value.quotationSub!.isNotEmpty,
                 isLoading: controller.updateQuoLoading.value,
