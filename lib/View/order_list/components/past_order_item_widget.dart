@@ -99,7 +99,7 @@ class PastOrderItem extends GetView<PastOrderController> {
                       ),
                     ),
                   ),*/
-                SizedBox(
+               /* SizedBox(
                   height: AppSize.displayHeight(context) * 0.11,
                   width: AppSize.displayHeight(context) * 0.11,
                   child: CommonNetworkImage(
@@ -112,7 +112,7 @@ class PastOrderItem extends GetView<PastOrderController> {
                 ),
                 SizedBox(
                   width: AppSize.displayWidth(context) * 0.035,
-                ),
+                ),*/
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -28,7 +28,7 @@ class ProfileScreen extends GetView<ProfileController> {
                 ),
                 child: const Center(
                   child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
                   ),
                 ),
               ),

@@ -30,6 +30,7 @@ class RadioButtonWithSplash extends StatelessWidget {
       //onTap: () => onChanged(!isSelected),
       child: Row(
         mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           MshCheckbox(
             isChecked: isSelected,
@@ -43,49 +44,28 @@ class RadioButtonWithSplash extends StatelessWidget {
           SizedBox(
             width: AppSize.displayWidth(context) * 0.05,
           ),
-          Expanded(
-            child: RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: "I accept the ",
-                    style: GoogleFonts.ptSans(
-                      fontSize: Get.height / 52,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.colorA6D,
-                    ),
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: "I accept the ",
+                  style: GoogleFonts.ptSans(
+                    fontSize: Get.height / 52,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.colorA6D,
                   ),
-                  TextSpan(
-                    text: "terms",
-                    style: GoogleFonts.ptSans(
-                      fontSize: Get.height / 52,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.color449,
-                      decoration: TextDecoration.underline,
-                    ),
-                    recognizer: TapGestureRecognizer()..onTap = onTermsTap,
+                ),
+                TextSpan(
+                  text: "terms & condition",
+                  style: GoogleFonts.ptSans(
+                    fontSize: Get.height / 52,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.color449,
+                    decoration: TextDecoration.underline,
                   ),
-                  TextSpan(
-                    text: " and ",
-                    style: GoogleFonts.ptSans(
-                      fontSize: Get.height / 52,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.colorA6D,
-                    ),
-                  ),
-                  TextSpan(
-                    text: "privacy policy",
-                    style: GoogleFonts.ptSans(
-                      fontSize: Get.height / 52,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.color449,
-                      decoration: TextDecoration.underline,
-                    ),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = onPrivacyPolicyTap,
-                  ),
-                ],
-              ),
+                  recognizer: TapGestureRecognizer()..onTap = onTermsTap,
+                ),
+              ],
             ),
           ),
         ],

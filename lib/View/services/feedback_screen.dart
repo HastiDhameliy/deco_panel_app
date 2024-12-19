@@ -136,13 +136,13 @@ class FeedBackScreen extends GetView<FeedbackController> {
                               des: controller.descriptionCon.value.text,
                             ).then((value) {
                               if(value == true){
-                                BottomNavController controller = BottomNavController();
-                                controller.drawerKey.currentState!.closeDrawer();
+                                Get.back();
                                 Get.back();
                               }
                             },);
                             controller.titleCon.value.clear();
                             controller.descriptionCon.value.clear();
+                            controller.isAbleFun();
                           }
                         },
                       ),

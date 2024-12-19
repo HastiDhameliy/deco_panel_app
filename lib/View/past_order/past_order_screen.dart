@@ -142,7 +142,7 @@ class PastOrderScreen extends GetView<PastOrderController> {
                 ),
                 child: const Center(
                   child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
                   ),
                 ),
               ),

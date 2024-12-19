@@ -108,7 +108,7 @@ class LoginScreen extends GetView<LoginController> {
                       controller.isAccepted.value = value;
                       controller.isAbleFun();
                     },
-                    label: 'I accept the terms and privacy policy',
+                    label: 'I accept the terms and condition',
                     onTermsTap: () {},
                     onPrivacyPolicyTap: () {},
                   ),
