@@ -203,13 +203,12 @@ class LoginScreen extends GetView<LoginController> {
                                         "OTP Sent Successfully",
                                         ToastType.success,
                                       );
-
+                                      controller.isLoading.value = false;
                                       Get.offAllNamed(RouteConstants.otpScreen,
                                           arguments: {
                                             "no": controller
                                                 .numberController.value.text,
                                           });
-                                      controller.isLoading.value = false;
                                     },
                                     codeAutoRetrievalTimeout:
                                         (String verificationId) {
