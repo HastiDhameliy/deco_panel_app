@@ -16,4 +16,5 @@ class RouteConstants {
   static const String orderItemViewScreen = '/OrderItemViewScreen';
   static const String quotationView = '/QuotationView';
   static const String editQuotationView = '/EditQuotationView';
+  static const String processingQuotation = '/ProcessingQuotation';
 }

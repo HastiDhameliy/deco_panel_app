@@ -23,6 +23,26 @@ class PastOrderController extends GetxController
   RxBool updateCartLoading = false.obs;
   RxBool cartLoading = false.obs;
   RxBool createOrderLoading = false.obs;
+  RxBool orderDetailsLoading = false.obs;
+  RxBool creatingLoading = false.obs;
+  var isLoading = false.obs;
+
+  Future<void> fetchData() async {
+    try {
+      // Start the loading animation
+      isLoading.value = true;
+
+      // Simulate API call
+      await Future.delayed(
+          const Duration(seconds: 2)); // Replace with actual API call
+
+      // Keep the animation visible for an additional 5 seconds
+      await Future.delayed(const Duration(seconds: 5));
+    } finally {
+      // Hide the animation
+      isLoading.value = false;
+    }
+  }
 
   @override
   void onInit() {
@@ -60,7 +80,7 @@ class PastOrderController extends GetxController
 
   getOrderDetail(String orderId) async {
     orderItemModel.value = await OrderApiService().fetchOrderDetailsApiUrl(
-      loading: createOrderLoading,
+      loading: orderDetailsLoading,
       orderId: orderId,
     );
   }
@@ -70,5 +90,10 @@ class PastOrderController extends GetxController
       loading: quotationLoading,
       orderref: orderref,
     );
+  }
+
+  Future<void> createQuotation(BuildContext context, String orderId) async {
+   await OrderApiService().createQuotationApi(
+        loading: creatingLoading, context: context, orderId: orderId);
   }
 }

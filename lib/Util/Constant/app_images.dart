@@ -24,4 +24,5 @@ class AppImages {
   static const String feedbackBg = "assets/feedbackPageSVG.svg";
   static const String aboutUsBg = "assets/about_us_bg.png";
   static const String receiptIcon = "assets/receipt.png";
+  static const String processingLottie = "assets/lottie/processing.json";
 }

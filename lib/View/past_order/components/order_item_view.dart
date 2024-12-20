@@ -1,3 +1,4 @@
+import 'package:deco_flutter_app/Data/Services/api_service.dart';
 import 'package:deco_flutter_app/Util/Constant/app_colors.dart';
 import 'package:deco_flutter_app/Util/Constant/app_size.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,8 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../Controller/past_order_controller.dart';
+import '../../../RoutesManagment/routes.dart';
+import '../../../widget/common_button.dart';
 
 class OrderItemViewScreen extends GetView<PastOrderController> {
   const OrderItemViewScreen({super.key});
@@ -19,16 +22,35 @@ class OrderItemViewScreen extends GetView<PastOrderController> {
         surfaceTintColor: Colors.transparent,
         shadowColor: Colors.black.withOpacity(0.4),
         flexibleSpace: Container(
-            decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1), // Light shadow color
-              blurRadius: 10.0, // Soften the shadow
-              offset: const Offset(0, 4), // Shadow appears below the AppBar
-            ),
-          ],
-        )),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1), // Light shadow color
+                blurRadius: 10.0, // Soften the shadow
+                offset: const Offset(0, 4), // Shadow appears below the AppBar
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          userType != 1
+              ? CommonButton(
+                  height: AppSize.displayHeight(context) * 0.04,
+                  width: AppSize.displayWidth(context) * 0.35,
+                  padding: EdgeInsets.zero,
+                  text: 'Create Quotation',
+                  disabledColor: AppColors.buttonSplashColor,
+                  onPressed: () async {
+                    Get.toNamed(RouteConstants.processingQuotation);
+                    controller.createQuotation(
+                        context,
+                        controller.orderItemModel.value.order?.id?.toString() ??
+                            "");
+                  },
+                ).paddingOnly(right: AppSize.displayWidth(context) * 0.01)
+              : const SizedBox(),
+        ],
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
@@ -45,7 +67,7 @@ class OrderItemViewScreen extends GetView<PastOrderController> {
         ),
       ),
       body: Obx(
-        () => controller.loading.value
+        () => controller.orderDetailsLoading.value
             ? Center(
                 child: Container(
                   height: AppSize.displayHeight(context) * 0.1,
@@ -101,7 +123,7 @@ class OrderItemViewScreen extends GetView<PastOrderController> {
                         ),
                         ListView.separated(
                             shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
+                            physics: const NeverScrollableScrollPhysics(),
                             padding: const EdgeInsets.symmetric(
                                 vertical: defaultPadding / 2),
                             itemBuilder: (context, index) {
@@ -137,10 +159,10 @@ class OrderItemViewScreen extends GetView<PastOrderController> {
                                         children: [
                                           Text(
                                             controller
-                                                .orderItemModel
-                                                .value
-                                                .orderSub![index]
-                                                .productSubCategory ??
+                                                    .orderItemModel
+                                                    .value
+                                                    .orderSub![index]
+                                                    .productSubCategory ??
                                                 "",
                                             textAlign: TextAlign.start,
                                             style: GoogleFonts.roboto(
@@ -252,23 +274,15 @@ class OrderItemViewScreen extends GetView<PastOrderController> {
                       ],
                     ),
                   )
-                : Expanded(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Text(
-                            "No Order Available",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.ptSans(
-                              color: AppColors.color333,
-                              fontSize: Get.height / 45,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ],
+                : Center(
+                    child: Text(
+                      "No Order Available",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.ptSans(
+                        color: AppColors.color333,
+                        fontSize: Get.height / 45,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
       ),

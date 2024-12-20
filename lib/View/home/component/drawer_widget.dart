@@ -33,147 +33,150 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Colors.white,
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          Obx(
-            () => Column(
-              children: [
-                SizedBox(
-                  height: AppSize.displayHeight(context) * 0.06,
-                ),
-                Container(
-                  height: AppSize.displayWidth(context) * 0.3,
-                  width: AppSize.displayWidth(context) * 0.3,
-                  padding: const EdgeInsets.all(defaultPadding / 4),
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage(
-                          AppImages.panelImage,
-                        ),
-                        fit: BoxFit.cover),
-                    shape: BoxShape.circle,
+      backgroundColor: AppColors.bgColor,
+      child: Container(
+        color: AppColors.bgColor,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            Obx(
+              () => Column(
+                children: [
+                  SizedBox(
+                    height: AppSize.displayHeight(context) * 0.06,
                   ),
-                ),
-                Text(
-                  Get.find<ProfileController>()
-                          .useDataModel
-                          .value
-                          .data
-                          ?.fullName ??
-                      "",
-                  style: GoogleFonts.ptSans(
-                    color: AppColors.darkHintColor,
-                    fontSize: Get.height / 45,
-                    fontWeight: FontWeight.w700,
+                  Container(
+                    height: AppSize.displayWidth(context) * 0.3,
+                    width: AppSize.displayWidth(context) * 0.3,
+                    padding: const EdgeInsets.all(defaultPadding / 4),
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage(
+                            AppImages.panelImage,
+                          ),
+                          fit: BoxFit.cover),
+                      shape: BoxShape.circle,
+                    ),
                   ),
-                ),
-                Text(
-                  Get.find<ProfileController>()
-                          .useDataModel
-                          .value
-                          .data
-                          ?.email ??
-                      "",
-                  style: GoogleFonts.roboto(
-                    color: AppColors.darkHintColor,
-                    fontSize: Get.height / 65,
-                    fontWeight: FontWeight.w400,
+                  Text(
+                    Get.find<ProfileController>()
+                            .useDataModel
+                            .value
+                            .data
+                            ?.fullName ??
+                        "",
+                    style: GoogleFonts.ptSans(
+                      color: AppColors.darkHintColor,
+                      fontSize: Get.height / 45,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          const Divider(
-            color: AppColors.buttonColor,
-          ),
-          ...List.generate(
-            drawerItem.length,
-            (index) => ListTile(
-              leading: Image.asset(
-                drawerItem[index][2],
-                color: AppColors.buttonColor,
-                height: userType == 1
-                    ? index == 5
-                        ? AppSize.displayHeight(context) * 0.022
-                        : index == 6
-                            ? AppSize.displayHeight(context) * 0.03
-                            : AppSize.displayHeight(context) * 0.027
-                    : index == 4
-                        ? AppSize.displayHeight(context) * 0.022
-                        : index == 5
-                            ? AppSize.displayHeight(context) * 0.03
-                            : AppSize.displayHeight(context) * 0.027,
+                  Text(
+                    Get.find<ProfileController>()
+                            .useDataModel
+                            .value
+                            .data
+                            ?.email ??
+                        "",
+                    style: GoogleFonts.roboto(
+                      color: AppColors.darkHintColor,
+                      fontSize: Get.height / 65,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
               ),
-              title: Text(
-                drawerItem[index][1],
-                style: GoogleFonts.ptSans(
-                  fontSize: Get.height / 55,
-                  fontWeight: FontWeight.w400,
+            ),
+            const Divider(
+              color: AppColors.buttonColor,
+            ),
+            ...List.generate(
+              drawerItem.length,
+              (index) => ListTile(
+                leading: Image.asset(
+                  drawerItem[index][2],
                   color: AppColors.buttonColor,
+                  height: userType == 1
+                      ? index == 5
+                          ? AppSize.displayHeight(context) * 0.022
+                          : index == 6
+                              ? AppSize.displayHeight(context) * 0.03
+                              : AppSize.displayHeight(context) * 0.027
+                      : index == 4
+                          ? AppSize.displayHeight(context) * 0.022
+                          : index == 5
+                              ? AppSize.displayHeight(context) * 0.03
+                              : AppSize.displayHeight(context) * 0.023,
                 ),
+                title: Text(
+                  drawerItem[index][1],
+                  style: GoogleFonts.ptSans(
+                    fontSize: Get.height / 55,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.buttonColor,
+                  ),
+                ),
+                onTap: () async {
+                  var con = Get.find<BottomNavController>();
+                  if (userType == 1) {
+                    switch (index) {
+                      case 0:
+                        con.drawerKey.currentState?.closeDrawer();
+                        con.changeIndex(0);
+                        break;
+                      case 1:
+                        con.drawerKey.currentState?.closeDrawer();
+                        con.changeIndex(3);
+                        break;
+                      case 2:
+                        con.drawerKey.currentState?.closeDrawer();
+                        con.changeIndex(2);
+                        break;
+                      case 3:
+                        Get.toNamed(RouteConstants.rewardPoint);
+                        break;
+                      case 5:
+                        Get.toNamed(RouteConstants.aboutUsScreen);
+                        break;
+                      case 4:
+                        Get.toNamed(RouteConstants.feedBackScreen);
+                        break;
+                      case 6:
+                        showLogoutDialog(context);
+                        break;
+                      default:
+                    }
+                  } else {
+                    switch (index) {
+                      case 0:
+                        con.drawerKey.currentState?.closeDrawer();
+                        con.changeIndex(1);
+                        break;
+                      case 1:
+                        con.drawerKey.currentState?.closeDrawer();
+                        con.changeIndex(0);
+                        break;
+                      case 2:
+                        Get.toNamed(RouteConstants.rewardPoint);
+                        break;
+                      case 4:
+                        Get.toNamed(RouteConstants.aboutUsScreen);
+                        break;
+                      case 3:
+                        Get.toNamed(RouteConstants.feedBackScreen);
+                        break;
+                      case 5:
+                        showLogoutDialog(context);
+                        break;
+                      default:
+                    }
+                  }
+                  // Handle Home action
+                },
               ),
-              onTap: () async {
-                var con = Get.find<BottomNavController>();
-                if (userType == 1) {
-                  switch (index) {
-                    case 0:
-                      con.drawerKey.currentState?.closeDrawer();
-                      con.changeIndex(0);
-                      break;
-                    case 1:
-                      con.drawerKey.currentState?.closeDrawer();
-                      con.changeIndex(3);
-                      break;
-                    case 2:
-                      con.drawerKey.currentState?.closeDrawer();
-                      con.changeIndex(2);
-                      break;
-                    case 3:
-                      Get.toNamed(RouteConstants.rewardPoint);
-                      break;
-                    case 5:
-                      Get.toNamed(RouteConstants.aboutUsScreen);
-                      break;
-                    case 4:
-                      Get.toNamed(RouteConstants.feedBackScreen);
-                      break;
-                    case 6:
-                      showLogoutDialog(context);
-                      break;
-                    default:
-                  }
-                } else {
-                  switch (index) {
-                    case 0:
-                      con.drawerKey.currentState?.closeDrawer();
-                      con.changeIndex(1);
-                      break;
-                    case 1:
-                      con.drawerKey.currentState?.closeDrawer();
-                      con.changeIndex(0);
-                      break;
-                    case 2:
-                      Get.toNamed(RouteConstants.rewardPoint);
-                      break;
-                    case 4:
-                      Get.toNamed(RouteConstants.aboutUsScreen);
-                      break;
-                    case 3:
-                      Get.toNamed(RouteConstants.feedBackScreen);
-                      break;
-                    case 5:
-                      showLogoutDialog(context);
-                      break;
-                    default:
-                  }
-                }
-                // Handle Home action
-              },
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

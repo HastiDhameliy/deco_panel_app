@@ -141,11 +141,12 @@ class LoginScreen extends GetView<LoginController> {
                                 );
 
                                 if (value['code'] == 200) {
-                                  // Get.offAllNamed(RouteConstants.otpScreen,
-                                  //     arguments: {
-                                  //       "no": controller
-                                  //           .numberController.value.text,
-                                  //     });
+                                  //Get.offAllNamed(RouteConstants.otpScreen,
+                                  //    arguments: {
+                                  //      "no": controller
+                                  //          .numberController.value.text,
+                                  //    });
+                                  //otpController.isLoading.value = false;
                                   await FirebaseAuth.instance.setSettings(
                                     appVerificationDisabledForTesting:
                                         false, // Ensure this is false for production

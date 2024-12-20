@@ -304,17 +304,17 @@ class _OtpScreenState extends State<OtpScreen> {
                         onPressed: () async {
                           FocusScope.of(context).unfocus();
                           print(otpController.verify.value);
-                          // await ApiService().loginApi(
-                          //     phone: Get.arguments != null &&
-                          //             Get.arguments["no"] != null
-                          //         ? Get.arguments["no"]
-                          //         : "",
-                          //     context: context,
-                          //     loading: otpController.isLoading);
-                          // otpController.otpController.value.clear();
+                          //await ApiService().loginApi(
+                          //    phone: Get.arguments != null &&
+                          //            Get.arguments["no"] != null
+                          //        ? Get.arguments["no"]
+                          //        : "",
+                          //    context: context,
+                          //    loading: otpController.isLoading);
+                          //otpController.otpController.value.clear();
+                          //otpController.isLoading.value = false;
                           try {
-                            otpController.isLoading.value =
-                            true;
+                            otpController.isLoading.value = true;
                             PhoneAuthCredential credential =
                                 PhoneAuthProvider.credential(
                               verificationId: otpController.verify.value,

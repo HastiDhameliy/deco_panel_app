@@ -13,6 +13,7 @@ import '../View/past_order/components/edit_quaotation_view.dart';
 import '../View/past_order/components/order_item_view.dart';
 import '../View/past_order/past_order_screen.dart';
 import '../View/past_order/quatation_screen.dart';
+import '../View/process_animation/processing_quotation.dart';
 import '../View/services/about_us_screen.dart';
 import '../View/services/feedback_screen.dart';
 import '../View/services/reward_point.dart';
@@ -80,6 +81,10 @@ class AllPages {
       GetPage(
           name: RouteConstants.editQuotationView,
           page: () => const EditQuotationView(),
+          binding: ScreenBindings()),
+      GetPage(
+          name: RouteConstants.processingQuotation,
+          page: () => const ProcessingQuotation(),
           binding: ScreenBindings()),
     ];
   }

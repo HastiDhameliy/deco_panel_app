@@ -58,7 +58,7 @@ class BottomNavController extends GetxController
 
   bool canCloseApp() {
     final currentTime = DateTime.now();
-    final backPressInterval = Duration(seconds: 2);
+    const backPressInterval = Duration(seconds: 2);
     if (lastBackPressTime == null ||
         currentTime.difference(lastBackPressTime!) > backPressInterval) {
       lastBackPressTime = currentTime;
@@ -77,6 +77,7 @@ class BottomNavController extends GetxController
           } else {
             Get.find<PastOrderController>().getOrder("2");
           }
+          Get.find<PastOrderController>().getOrderList();
         case 2:
           Get.find<PastOrderController>().getOrderList();
         case 3:

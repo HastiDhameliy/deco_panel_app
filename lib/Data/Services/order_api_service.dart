@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../Controller/bottom_nav_controller.dart';
 import '../../Model/OrderItemModel.dart';
 import '../../Model/cart_model.dart';
 import '../../Model/quotation_model.dart';
@@ -145,22 +146,22 @@ class OrderApiService {
   }) async {
     QuotationModel quotationModel = QuotationModel();
 
-      loading.value = true;
-      var url = Uri.parse(ApiConstants.getQuotationApiUrl);
-      debugPrint(url.toString());
-      var response = await http.post(url, headers: {
-        "Authorization": "Bearer $token", // Correct usage
-      }, body: {
-        "orderref": orderref
-      });
-      debugPrint("getQuotationApiUrl statusCode:- ${response.statusCode}");
-      if (response.statusCode == 200) {
-        debugPrint("getQuotationApiUrl response:- ${response.body}");
-        quotationModel = quotationModelFromJson(response.body);
-        loading.value = false;
-      } else {
-        loading.value = false;
-      }
+    loading.value = true;
+    var url = Uri.parse(ApiConstants.getQuotationApiUrl);
+    debugPrint(url.toString());
+    var response = await http.post(url, headers: {
+      "Authorization": "Bearer $token", // Correct usage
+    }, body: {
+      "orderref": orderref
+    });
+    debugPrint("getQuotationApiUrl statusCode:- ${response.statusCode}");
+    if (response.statusCode == 200) {
+      debugPrint("getQuotationApiUrl response:- ${response.body}");
+      quotationModel = quotationModelFromJson(response.body);
+      loading.value = false;
+    } else {
+      loading.value = false;
+    }
 
     getdata();
     return quotationModel;
@@ -352,6 +353,79 @@ class OrderApiService {
                   context, responseJson['msg'] ?? "", ToastType.success);
               loading.value = false;
             }
+          } else {
+            customToast(context, responseJson['msg'] ?? "", ToastType.warning);
+            loading.value = false;
+          }
+        } catch (e) {
+          debugPrint("Error decoding response body: $e");
+          customToast(context, "Error parsing response", ToastType.warning);
+          loading.value = false;
+        }
+      } else {
+        customToast(
+            context, jsonDecode(response.body)['msg'] ?? "", ToastType.warning);
+        loading.value = false;
+      }
+    } catch (e) {
+      debugPrint("Error during HTTP request: $e");
+      customToast(
+          context, "An error occurred. Please try again.", ToastType.warning);
+      loading.value = false;
+    }
+
+    getdata();
+    return loading.value;
+  }
+
+  /// ///////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///                                                                                                     ///
+  ///                                ******   CREATE QUOTATION API     *****                                   ///
+  ///                                                                                                     ///
+  /// ///////////////////////////////////////////////////////////////////////////////////////////////////////
+  Future<bool> createQuotationApi({
+    required RxBool loading,
+    required BuildContext context,
+    required String orderId,
+  }) async {
+    loading.value = true;
+    var url = Uri.parse(ApiConstants.createQuotationApiUrl);
+    debugPrint(url.toString());
+    var body = {
+      "order_id": orderId,
+    };
+
+    debugPrint(body.toString());
+    try {
+      var response = await http.post(
+        url,
+        headers: {
+          "Authorization": "Bearer $token", // Correct usage
+        },
+        body: body,
+      );
+
+      debugPrint("createQuotationApi statusCode:- ${response.statusCode}");
+      debugPrint("createQuotationApi body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        // Try parsing the response body
+        try {
+          var responseJson = jsonDecode(response.body);
+          debugPrint("Decoded response: $responseJson");
+
+          if (responseJson['code'] == 200) {
+            await Future.delayed(
+              const Duration(minutes: 1),
+              () {
+                customToast(
+                    context, responseJson['msg'] ?? "", ToastType.success);
+                Get.back();
+                Get.back();
+                Get.find<BottomNavController>().changeIndex(1);
+                loading.value = false;
+              },
+            );
           } else {
             customToast(context, responseJson['msg'] ?? "", ToastType.warning);
             loading.value = false;
