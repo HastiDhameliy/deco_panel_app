@@ -416,7 +416,7 @@ class OrderApiService {
 
           if (responseJson['code'] == 200) {
             await Future.delayed(
-              const Duration(minutes: 1),
+              const Duration(seconds: 5),
               () {
                 customToast(
                     context, responseJson['msg'] ?? "", ToastType.success);
