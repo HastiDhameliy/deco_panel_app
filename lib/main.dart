@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
             const ColorScheme.highContrastLight(background: Colors.white),
         useMaterial3: true,
       ),
-      initialRoute: RouteConstants.splashScreen,
+      initialRoute: RouteConstants.splashCommonPage,
       getPages: AllPages.getPages(),
       initialBinding: ScreenBindings(),
     );

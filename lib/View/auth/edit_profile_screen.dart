@@ -143,12 +143,6 @@ class EditProfileScreen extends GetView<LoginController> {
               onChanged: (p0) {
                 controller.isAbleFun2();
               },
-              validator: (value) {
-                if (value == null && value!.trim().isEmpty) {
-                  return "Please enter your address";
-                }
-                return null;
-              },
             ).paddingOnly(bottom: AppSize.displayHeight(context) * 0.045),
             CustomRoundedTextField(
               labelText: "Image",
@@ -190,12 +184,6 @@ class EditProfileScreen extends GetView<LoginController> {
               ),
               onChanged: (val) {
                 controller.isAbleFun2();
-              },
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return "Please add your image";
-                }
-                return null;
               },
             ).paddingOnly(bottom: AppSize.displayHeight(context) * 0.05),
             Row(

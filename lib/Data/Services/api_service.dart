@@ -5,11 +5,11 @@ import 'dart:io';
 import 'package:deco_flutter_app/Model/offer_model.dart';
 import 'package:deco_flutter_app/Model/sub_category_item_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../Controller/bottom_nav_controller.dart';
 import '../../Model/product_category_model.dart';
 import '../../Model/slider_model.dart';
 import '../../Model/user_detail_model.dart';
@@ -145,47 +145,66 @@ class ApiService {
     }
   }
 
-  Future<bool> loginApi(
-      {required String phone,
-      required BuildContext context,
-      required RxBool loading}) async {
+  Future<bool> loginApi({
+    required String phone,
+    required String password,
+    required BuildContext context,
+    required RxBool loading,
+  }) async {
     UserModel userDetails = UserModel();
+    loading.value = true;
     try {
-      loading.value = true;
-      var url = Uri.parse("${ApiConstants.loginApiUrl}$phone&password=123456");
-      debugPrint(url.toString());
+      var url =
+          Uri.parse("${ApiConstants.loginApiUrl}$phone&password=$password");
+      debugPrint("Requesting URL: $url");
+
       var response = await http.post(url);
-      debugPrint("loginApi statusCode:- ${response.statusCode}");
+      debugPrint("Response status code: ${response.statusCode}");
+
       if (response.statusCode == 200) {
-        debugPrint("loginApi response:- ${response.body}");
-        if (jsonDecode(response.body)['code'] == 200) {
+        var jsonResponse = jsonDecode(response.body);
+        debugPrint("Response body: ${response.body}");
+
+        if (jsonResponse['code'] == 200) {
           userDetails = userModelFromJson(response.body);
+
+          // Save user details in shared preferences
           final SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString("userModel", jsonEncode(userDetails));
-          Get.offAllNamed(RouteConstants.animatedBottomNavBar);
-          customToast(context, jsonDecode(response.body)['msg'] ?? "",
-              ToastType.success);
+
+          // Save auth token
           await SessionManager().saveAuthToken(userDetails.data?.token ?? "");
-          BottomNavController con = Get.put(BottomNavController());
-          loading.value = false;
-          getdata();
+
+          // Navigate to home screen
+          Get.offAllNamed(RouteConstants.animatedBottomNavBar);
+
+          // Show success toast
+          customToast(context, jsonResponse['msg'] ?? "Login successful",
+              ToastType.success);
         } else {
-          loading.value = false;
           customToast(
-              context, jsonDecode(response.body)['msg'] ?? "", ToastType.error);
+              context, jsonResponse['msg'] ?? "Login failed", ToastType.error);
         }
+      } else if (response.statusCode == 403) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        var jsonResponse = jsonDecode(response.body);
+        debugPrint("Response body: ${response.body}");
+        showToast(jsonResponse['msg'] ?? "Account Inactive");
+        prefs.clear();
+        Get.offAllNamed(RouteConstants.loginScreen);
       } else {
-        getdata();
-        loading.value = false;
         customToast(
-            context, jsonDecode(response.body)['msg'] ?? "", ToastType.error);
+            context, "Server error: ${response.statusCode}", ToastType.error);
       }
     } catch (e) {
+      log("Login API error: ${e.toString()}");
+      customToast(
+          context, "An error occurred. Please try again.", ToastType.error);
+    } finally {
       loading.value = false;
-      log("loginApi error:-${e.toString()}");
     }
-    getdata();
-    return loading.value;
+
+    return !loading.value;
   }
 
   Future<SliderModel> fetchSliderApi(

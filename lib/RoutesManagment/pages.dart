@@ -17,6 +17,7 @@ import '../View/process_animation/processing_quotation.dart';
 import '../View/services/about_us_screen.dart';
 import '../View/services/feedback_screen.dart';
 import '../View/services/reward_point.dart';
+import '../View/splash_common_page.dart';
 import '../View/splash_screen.dart';
 
 class AllPages {
@@ -25,6 +26,10 @@ class AllPages {
       GetPage(
           name: RouteConstants.splashScreen,
           page: () => const SplashScreen(),
+          binding: ScreenBindings()),
+      GetPage(
+          name: RouteConstants.splashCommonPage,
+          page: () => const SplashCommonPage(),
           binding: ScreenBindings()),
       GetPage(
           name: RouteConstants.loginScreen,

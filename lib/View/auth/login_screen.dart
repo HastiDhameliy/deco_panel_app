@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../Controller/login_controller.dart';
 import '../../Controller/otp_controller.dart';
@@ -19,6 +20,8 @@ OtpController otpController = Get.put(OtpController());
 
 class LoginScreen extends GetView<LoginController> {
   LoginScreen({super.key});
+
+  final webcontroller = WebViewController();
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +40,19 @@ class LoginScreen extends GetView<LoginController> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "Let’s Verify Your Number",
+                    "Welcome to",
                     textAlign: TextAlign.center,
                     style: GoogleFonts.ptSans(
-                      fontSize: Get.height / 23,
+                      fontSize: Get.height / 26,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.color449,
+                    ),
+                  ),
+                  Text(
+                    "Deco Panel",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.ptSans(
+                      fontSize: Get.height / 20,
                       fontWeight: FontWeight.w700,
                       color: AppColors.color449,
                     ),
@@ -49,8 +61,8 @@ class LoginScreen extends GetView<LoginController> {
                     height: Get.height / 30,
                   ),
                   Image.asset(
-                    AppImages.loginVerification,
-                    height: AppSize.displayHeight(context) * 0.3,
+                    AppImages.logo,
+                    height: AppSize.displayHeight(context) * 0.23,
                   ),
                   SizedBox(
                     height: Get.height / 50,
@@ -109,8 +121,96 @@ class LoginScreen extends GetView<LoginController> {
                       controller.isAbleFun();
                     },
                     label: 'I accept the terms and condition',
-                    onTermsTap: () {},
-                    onPrivacyPolicyTap: () {},
+                    onTermsTap: () async {
+                      webcontroller
+                        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                        ..loadRequest(Uri.parse(
+                            "https://decopanel.in/privacypolicy.html"));
+                      showDialog(
+                        barrierDismissible: false,
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            backgroundColor: Colors.white,
+                            surfaceTintColor: Colors.white,
+                            titlePadding:
+                                EdgeInsets.only(top: 10, right: 10, bottom: 0),
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                      padding: EdgeInsets.all(3),
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: AppColors.textBlack
+                                              .withOpacity(0.2)
+                                              .withOpacity(0.5)),
+                                      child: Icon(
+                                        Icons.close,
+                                        color: AppColors.textBlack,
+                                      )),
+                                ),
+                              ],
+                            ),
+                            contentPadding: EdgeInsets.all(0),
+                            content: Container(
+                              width: 430, // Adjust the width here
+                              child: WebViewWidget(controller: webcontroller),
+                            ),
+                          );
+                        },
+                      );
+                      // Get.to(TermsAndConditionPage(url: ConstantString.loginTermsUrl,),);
+                    },
+                    onPrivacyPolicyTap: () async {
+                      webcontroller
+                        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                        ..loadRequest(Uri.parse(
+                            "https://decopanel.in/privacypolicy.html"));
+                      showDialog(
+                        barrierDismissible: false,
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            backgroundColor: Colors.white,
+                            surfaceTintColor: Colors.white,
+                            titlePadding:
+                                EdgeInsets.only(top: 10, right: 10, bottom: 0),
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                      padding: EdgeInsets.all(3),
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: AppColors.textBlack
+                                              .withOpacity(0.2)
+                                              .withOpacity(0.5)),
+                                      child: Icon(
+                                        Icons.close,
+                                        color: AppColors.textBlack,
+                                      )),
+                                ),
+                              ],
+                            ),
+                            contentPadding: EdgeInsets.all(0),
+                            content: Container(
+                              width: 430, // Adjust the width here
+                              child: WebViewWidget(controller: webcontroller),
+                            ),
+                          );
+                        },
+                      );
+                      // Get.to(TermsAndConditionPage(url: ConstantString.loginTermsUrl,),);
+                    },
                   ),
                   SizedBox(
                     height: Get.height / 15,
@@ -263,7 +363,7 @@ class LoginScreen extends GetView<LoginController> {
                           Get.offAllNamed(RouteConstants.editProfileScreen);
                         },
                         child: Text(
-                          " Register",
+                          " Sign up",
                           style: GoogleFonts.ptSans(
                             fontSize: Get.height / 55,
                             fontWeight: FontWeight.w500,

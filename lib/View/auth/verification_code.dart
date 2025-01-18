@@ -34,11 +34,11 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   void initState() {
     // TODO: implement initState
-    listenToIncomingSMS(context);
+    //listenToIncomingSMS(context);
     super.initState();
   }
 
-  void listenToIncomingSMS(BuildContext context) {
+  /* void listenToIncomingSMS(BuildContext context) {
     print("Listening to sms.");
     telephony.listenIncomingSms(
         onNewMessage: (SmsMessage message) {
@@ -57,7 +57,7 @@ class _OtpScreenState extends State<OtpScreen> {
           }
         },
         listenInBackground: false);
-  }
+  }*/
 
   Future<void> sendOTP() async {
     await loginController.auth
@@ -115,7 +115,7 @@ class _OtpScreenState extends State<OtpScreen> {
         otpController.resendToken.value = resendToken ?? 0;
         otpController.verify.value = verificationId;
         customToast(context, "OTP Sent Successfully", ToastType.success);
-        listenToIncomingSMS(context);
+        //listenToIncomingSMS(context);
         // mobileNumberController.isButtonLoading.value =
         // false;
         // Get.to(() => OtpScreen(
@@ -324,6 +324,8 @@ class _OtpScreenState extends State<OtpScreen> {
                                 .signInWithCredential(credential);
                             // controller.postCheckMobileApi({"mobile": mobileNumberController.mobileNumberController.value.text.trim()});
                             await ApiService().loginApi(
+                                password:
+                                    otpController.otpController.value.text,
                                 phone: Get.arguments != null &&
                                         Get.arguments["no"] != null
                                     ? Get.arguments["no"]

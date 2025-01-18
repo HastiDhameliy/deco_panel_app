@@ -54,8 +54,6 @@ class LoginController extends GetxController with WidgetsBindingObserver {
     isAble2.value = nameCon.value.text.trim().isNotEmpty &&
         mobileCon.value.text.trim().isNotEmpty &&
         emailCon.value.text.trim().isNotEmpty &&
-        addressCon.value.text.trim().isNotEmpty &&
-        imageCon.value.text.trim().isNotEmpty &&
         mobileCon.value.text.length == 10;
     print("is sign up able :${isAble2.value}");
     return isAble2;
