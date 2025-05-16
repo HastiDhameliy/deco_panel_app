@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,6 +12,7 @@ import '../../../Util/Constant/app_colors.dart';
 import '../../../Util/Constant/app_images.dart';
 import '../../../Util/Constant/app_size.dart';
 import '../../../widget/common_button.dart';
+import '../home_screen.dart';
 
 class DrawerWidget extends StatefulWidget {
   const DrawerWidget({super.key});
@@ -174,7 +176,22 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   // Handle Home action
                 },
               ),
-            )
+            ),
+            SizedBox(height: Get.height * 0.02),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () => deleteDialog(context, Get.height, Get.width),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  child: const Text(
+                    "Delete Account",
+                    style: TextStyle(color: AppColors.whiteColor),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: Get.height * 0.04),
           ],
         ),
       ),
@@ -242,6 +259,81 @@ class _DrawerWidgetState extends State<DrawerWidget> {
           ],
         );
       },
+    );
+  }
+
+  deleteDialog(context, double height, double width) {
+    return showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: AppColors.whiteColor,
+        surfaceTintColor: AppColors.whiteColor,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                        onTap: () {
+                          Get.back();
+                        },
+                        child: Icon(CupertinoIcons.clear_circled_solid))
+                  ],
+                ),
+                SizedBox(height: height * 0.02),
+                Text(
+                  "Are you sure you want to delete your account? This will permanently erase your account.",
+                  style: TextStyle(
+                    fontSize: Get.width * 0.04,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textBlack,
+                  ),
+                ),
+                SizedBox(height: height * 0.03),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => postDeleteProfileApi(context),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red),
+                        child: const Text(
+                          "Delete",
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: Get.width * 0.04,
+                    ),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => Get.back(),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white),
+                        child: const Text(
+                          "Cancel",
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: height * 0.01),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

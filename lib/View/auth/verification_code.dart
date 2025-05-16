@@ -1,4 +1,3 @@
-import 'package:another_telephony/telephony.dart';
 import 'package:deco_flutter_app/Data/Services/api_service.dart';
 import 'package:deco_flutter_app/Util/Constant/app_size.dart';
 import 'package:deco_flutter_app/View/auth/login_screen.dart';
@@ -26,7 +25,8 @@ class _OtpScreenState extends State<OtpScreen> {
 
   // OtpController controller = Get.put(OtpController());
   int backspaceCount = 0;
-  final telephony = Telephony.instance;
+
+  // final telephony = Telephony.instance;
   RxBool checkTermsCondition = false.obs;
 
   //final controller = WebViewController();
@@ -310,6 +310,8 @@ class _OtpScreenState extends State<OtpScreen> {
                           //        ? Get.arguments["no"]
                           //        : "",
                           //    context: context,
+                          //  password:
+                          //  otpController.otpController.value.text,
                           //    loading: otpController.isLoading);
                           //otpController.otpController.value.clear();
                           //otpController.isLoading.value = false;
@@ -324,8 +326,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                 .signInWithCredential(credential);
                             // controller.postCheckMobileApi({"mobile": mobileNumberController.mobileNumberController.value.text.trim()});
                             await ApiService().loginApi(
-                                password:
-                                    otpController.otpController.value.text,
+                                password: "123456",
                                 phone: Get.arguments != null &&
                                         Get.arguments["no"] != null
                                     ? Get.arguments["no"]

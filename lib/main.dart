@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,15 +10,31 @@ import 'RoutesManagment/screen_bindings.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: 'AIzaSyBal17y1PxbqIAM7jl5AlPTnM5AXibiVI0',
-      appId: '1:872125002397:android:35d6af0685296fe640da74',
-      messagingSenderId: '872125002397',
-      projectId: 'deco-panel',
-      storageBucket: 'deco-panel.firebasestorage.app',
-    ),
-  );
+
+  // Conditional Firebase initialization
+  if (Platform.isAndroid) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: 'AIzaSyBal17y1PxbqIAM7jl5AlPTnM5AXibiVI0',
+        appId: '1:872125002397:android:35d6af0685296fe640da74',
+        messagingSenderId: '872125002397',
+        projectId: 'deco-panel',
+        storageBucket: 'deco-panel.firebasestorage.app',
+      ),
+    );
+  } else if (Platform.isIOS) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: "AIzaSyDjRHg9BZ6Lq4sLaK7jwGPSJj0cWg-vAqA",
+        appId: "1:872125002397:ios:f99354b206f5cb9b40da74",
+        messagingSenderId: "872125002397",
+        projectId: "deco-panel",
+        storageBucket: "deco-panel.firebasestorage.app",
+        // Add from Firebase Console if available
+        iosBundleId: "com.deco.decoapp",
+      ),
+    );
+  }
   runApp(const MyApp());
 }
 

@@ -56,4 +56,5 @@ class ApiConstants {
   static String getQuotationApiUrl = '${baseUrl}fetch-quotation';
   static String updateQuotationApiUrl = '${baseUrl}update-quotation';
   static String createQuotationApiUrl = '${baseUrl}create-quotation';
+  static String deleteProfile = "${baseUrl}delete-account";
 }

@@ -10,7 +10,6 @@ import '../../Controller/login_controller.dart';
 import '../../Controller/otp_controller.dart';
 import '../../RoutesManagment/routes.dart';
 import '../../Util/Constant/app_colors.dart';
-import '../../Util/Constant/app_images.dart';
 import '../../Util/Constant/app_size.dart';
 import '../../widget/common_button.dart';
 import '../../widget/radio_button.dart';
@@ -61,7 +60,7 @@ class LoginScreen extends GetView<LoginController> {
                     height: Get.height / 30,
                   ),
                   Image.asset(
-                    AppImages.logo,
+                    "assets/dp_png.png",
                     height: AppSize.displayHeight(context) * 0.23,
                   ),
                   SizedBox(

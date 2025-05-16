@@ -431,10 +431,27 @@ class ApiService {
     return offerModel;
   }
 
-  getdata() async {
+  Future getdata() async {
     final SharedPreferences preferences = await SharedPreferences.getInstance();
-    userDetails = userModelFromJson(preferences.getString("userModel") ?? "");
-    token = userDetails.data?.token ?? "";
-    userType = userDetails.data?.user?.userTypeId ?? 1;
+    final userModelString = preferences.getString("userModel");
+
+    if (userModelString != null && userModelString.isNotEmpty) {
+      try {
+        userDetails = userModelFromJson(userModelString);
+
+        print("username ${userDetails.data?.user?.name} ::: "
+            "${userDetails.data?.user?.mobile} :: "
+            "${userDetails.data?.user?.cpassword}");
+
+        token = userDetails.data?.token ?? "";
+        userType = userDetails.data?.user?.userTypeId ?? 1;
+      } catch (e) {
+        print("Error decoding userModel JSON: $e");
+        // Optional: clear corrupted data
+        // await preferences.remove("userModel");
+      }
+    } else {
+      print("No userModel found in SharedPreferences");
+    }
   }
 }

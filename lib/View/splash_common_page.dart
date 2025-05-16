@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'dart:io';
 
-import 'package:deco_flutter_app/View/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,7 +8,6 @@ import 'package:in_app_update/in_app_update.dart';
 
 import '../Data/Providers/session_manager.dart';
 import '../Data/Services/api_service.dart';
-import '../Model/user_model.dart';
 import '../RoutesManagment/routes.dart';
 import 'auth/login_screen.dart';
 
@@ -24,6 +23,7 @@ class _SplashCommonPageState extends State<SplashCommonPage> {
   void initState() {
     super.initState();
     // Set the timer for 2 seconds before navigating to the next screen
+
     checkForUpdate();
     // checkAndRequestCameraPermissions(context);
     getUserData(context);
@@ -33,10 +33,12 @@ class _SplashCommonPageState extends State<SplashCommonPage> {
 
   Future<void> checkForUpdate() async {
     try {
-      _updateInfo = await InAppUpdate.checkForUpdate();
-      if (_updateInfo?.updateAvailability ==
-          UpdateAvailability.updateAvailable) {
-        startFlexibleUpdate();
+      if (Platform.isAndroid) {
+        _updateInfo = await InAppUpdate.checkForUpdate();
+        if (_updateInfo?.updateAvailability ==
+            UpdateAvailability.updateAvailable) {
+          startFlexibleUpdate();
+        }
       }
     } catch (e) {
       print("Error checking for updates: $e");
@@ -55,7 +57,7 @@ class _SplashCommonPageState extends State<SplashCommonPage> {
   }
 
   Future<void> getUserData(BuildContext context) async {
-    UserModel userDetails = UserModel();
+    await ApiService().getdata();
     token = (await SessionManager().getAuthToken()) ?? "";
 
     await Future.delayed(const Duration(seconds: 3));
@@ -65,17 +67,17 @@ class _SplashCommonPageState extends State<SplashCommonPage> {
       return;
     }
 
-    // Call API if token exists
-    if (token.isNotEmpty) {
-      await ApiService().getdata();
+    if (token.isNotEmpty && userDetails.data != null) {
+      await ApiService().loginApi(
+        phone: userDetails.data?.user?.mobile ?? "",
+        context: context,
+        loading: otpController.isLoading,
+        password: userDetails.data?.user?.cpassword ?? "",
+      );
+    } else {
+      Get.offAllNamed(RouteConstants.loginScreen);
+      return;
     }
-
-    await ApiService().loginApi(
-      phone: userDetails.data?.user?.mobile ?? "",
-      context: context,
-      loading: otpController.isLoading,
-      password: userDetails.data?.user?.cpassword ?? "",
-    );
   }
 
   @override

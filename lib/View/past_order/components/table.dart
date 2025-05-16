@@ -18,11 +18,11 @@ class DynamicTable extends StatelessWidget {
   final String total; // Total Amount Text
 
   const DynamicTable({
-    Key? key,
+    super.key,
     required this.data,
     required this.headers,
     required this.total,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

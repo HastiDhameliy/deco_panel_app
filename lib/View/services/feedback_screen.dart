@@ -7,7 +7,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../Controller/bottom_nav_controller.dart';
 import '../../Util/Constant/app_colors.dart';
 import '../../widget/common_button.dart';
 import '../../widget/text_form_field_widget.dart';
@@ -65,7 +64,10 @@ class FeedBackScreen extends GetView<FeedbackController> {
               key: controller.feedbackFormKey,
               child: ListView(
                 children: [
-                  SvgPicture.asset(AppImages.feedbackBg,height: AppSize.displayHeight(context) * 0.23,),
+                  SvgPicture.asset(
+                    AppImages.feedbackBg,
+                    height: AppSize.displayHeight(context) * 0.23,
+                  ),
                   SizedBox(
                     height: AppSize.displayHeight(context) * 0.01,
                   ),
@@ -118,33 +120,39 @@ class FeedBackScreen extends GetView<FeedbackController> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CommonButton(
-                        text: 'Submit',
-                        isEnabled: controller.isAble.value,
-                        isLoading: controller.isLoading.value,
-                        disabledColor: AppColors.buttonSplashColor,
-                        onPressed: () async {
-                          // Close the keyboard
-                          FocusScope.of(context).unfocus();
+                      Expanded(
+                        child: CommonButton(
+                          text: 'Submit',
+                          isEnabled: controller.isAble.value,
+                          isLoading: controller.isLoading.value,
+                          disabledColor: AppColors.buttonSplashColor,
+                          onPressed: () async {
+                            // Close the keyboard
+                            FocusScope.of(context).unfocus();
 
-                          if (controller.feedbackFormKey.currentState!
-                              .validate()) {
-                            await ApiService().createFeedbackApi(
-                              context: context,
-                              loading: controller.isLoading,
-                              sub: controller.titleCon.value.text,
-                              des: controller.descriptionCon.value.text,
-                            ).then((value) {
-                              if(value == true){
-                                Get.back();
-                                Get.back();
-                              }
-                            },);
-                            controller.titleCon.value.clear();
-                            controller.descriptionCon.value.clear();
-                            controller.isAbleFun();
-                          }
-                        },
+                            if (controller.feedbackFormKey.currentState!
+                                .validate()) {
+                              await ApiService()
+                                  .createFeedbackApi(
+                                context: context,
+                                loading: controller.isLoading,
+                                sub: controller.titleCon.value.text,
+                                des: controller.descriptionCon.value.text,
+                              )
+                                  .then(
+                                (value) {
+                                  if (value == true) {
+                                    Get.back();
+                                    Get.back();
+                                  }
+                                },
+                              );
+                              controller.titleCon.value.clear();
+                              controller.descriptionCon.value.clear();
+                              controller.isAbleFun();
+                            }
+                          },
+                        ),
                       ),
                     ],
                   ),

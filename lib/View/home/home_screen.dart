@@ -1,12 +1,19 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Controller/bottom_nav_controller.dart';
 import '../../Data/Providers/api_constants.dart';
+import '../../Data/Providers/session_manager.dart';
 import '../../RoutesManagment/routes.dart';
 import '../../Util/Constant/app_colors.dart';
 import '../../Util/Constant/app_size.dart';
+import '../../Util/custom/custom_toast.dart';
 import 'component/category_widget.dart';
 import 'component/slider.dart';
 
@@ -111,5 +118,44 @@ class HomeScreen extends GetView<BottomNavController> {
         ),
       ),
     );
+  }
+}
+
+Future<void> postDeleteProfileApi(BuildContext context) async {
+  try {
+    final token = (await SessionManager().getAuthToken()) ?? "";
+    print(Uri.parse(ApiConstants.deleteProfile));
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse(ApiConstants.deleteProfile),
+    );
+
+    request.headers.addAll({
+      'Authorization': token,
+    });
+
+    final res = await request.send();
+    final responseDone = await http.Response.fromStream(res);
+    final responseData = json.decode(responseDone.body);
+    debugPrint("Post delete profile response: $responseData");
+    if (responseDone.statusCode == 200) {
+      if (responseData['code'] == 200) {
+        customToast(context, responseData['msg'] ?? "Deleted successfully",
+            ToastType.success);
+
+        await SessionManager().clearSharedPreferences();
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.clear();
+        Get.offAllNamed(RouteConstants.loginScreen);
+      } else {
+        customToast(context, responseData['msg'] ?? "Something went wrong",
+            ToastType.warning);
+      }
+    } else {
+      customToast(context, "Something went wrong", ToastType.warning);
+    }
+  } catch (e) {
+    customToast(context, "Something went wrong", ToastType.warning);
+    debugPrint("Error deleting profile: $e");
   }
 }
